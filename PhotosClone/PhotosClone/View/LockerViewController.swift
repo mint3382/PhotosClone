@@ -11,6 +11,20 @@ import Photos
 class LockerViewController: UIViewController {
     private lazy var flowLayout = self.createFlowLayout()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.flowLayout)
+    private let timePeriodSegmentControl: UISegmentedControl = {
+        let control = UISegmentedControl(items: ["연", "월", "일", "모든 사진"])
+        control.selectedSegmentIndex = 3
+        control.selectedSegmentTintColor = .systemGray2
+        control.backgroundColor = .systemGray6
+        control.translatesAutoresizingMaskIntoConstraints = false
+        
+        let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        let selectedTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        control.setTitleTextAttributes(titleTextAttributes, for: .normal)
+        control.setTitleTextAttributes(selectedTitleTextAttributes, for: .selected)
+        
+        return control
+    }()
     
     private var fetchAsset: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
@@ -28,12 +42,7 @@ class LockerViewController: UIViewController {
         
         configureCollectionView()
         configureCollectionViewUI()
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        let width = view.bounds.inset(by: view.safeAreaInsets).width / 5
-        flowLayout.itemSize = CGSize(width: width - 2, height: width - 2)
+        configureTimePeriodSegmentControl()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,11 +96,25 @@ class LockerViewController: UIViewController {
     
     private func createFlowLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
+        let width = view.bounds.inset(by: view.safeAreaInsets).width / 5
+        
+        layout.itemSize = CGSize(width: width - 2, height: width - 2)
         layout.minimumLineSpacing = 1
         layout.minimumInteritemSpacing = 1
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         
         return layout
+    }
+    
+    private func configureTimePeriodSegmentControl() {
+        view.addSubview(timePeriodSegmentControl)
+        
+        NSLayoutConstraint.activate([
+            timePeriodSegmentControl.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 24),
+            timePeriodSegmentControl.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+            timePeriodSegmentControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -4),
+            timePeriodSegmentControl.heightAnchor.constraint(equalToConstant: 40)
+        ])
     }
 }
 
@@ -120,3 +143,9 @@ extension LockerViewController: UICollectionViewDataSource, UICollectionViewDele
         return cell
     }
 }
+
+//#Preview {
+//    let vc = LockerViewController()
+//    
+//    return vc
+//}

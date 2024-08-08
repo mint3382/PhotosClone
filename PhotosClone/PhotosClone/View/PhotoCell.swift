@@ -12,7 +12,8 @@ class PhotoCell: UICollectionViewCell, Identifiable {
     var representedAssetIdentifier: String = ""
     let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
