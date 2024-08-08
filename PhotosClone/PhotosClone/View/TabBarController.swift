@@ -10,6 +10,7 @@ import UIKit
 class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        registerViewControllers()
         setUpViewControllers()
         UITabBar.appearance().backgroundColor = .white
         tabBar.barTintColor = .white
@@ -20,7 +21,7 @@ class TabBarController: UITabBarController {
     }
     
     private func setUpViewControllers() {
-        let locker = LockerViewController()
+        let locker = DIContainer.shared.resolve(LockerViewController.self)
         let forYou = ForYouViewController()
         let album = AlbumViewController()
         let search = SearchViewController()
@@ -38,5 +39,25 @@ class TabBarController: UITabBarController {
         search.tabBarItem.title = "검색"
         
         viewControllers = [locker, forYou, album, search]
+    }
+    
+    private func registerViewControllers() {
+        registerLockerViewControllers()
+    }
+    
+    private func registerLockerViewControllers() {
+        let allPhotosViewController = AllPhotosViewController()
+        let dayPhotosViewController = DayPhotosViewController()
+        let monthPhotosViewController = MonthPhotosViewController()
+        let yearPhotosViewController = YearPhotosViewController()
+        
+        DIContainer.shared.register(AllPhotosViewController.self, dependency: allPhotosViewController)
+        DIContainer.shared.register(DayPhotosViewController.self, dependency: dayPhotosViewController)
+        DIContainer.shared.register(MonthPhotosViewController.self, dependency: monthPhotosViewController)
+        DIContainer.shared.register(YearPhotosViewController.self, dependency: yearPhotosViewController)
+        
+        let lockerViewModel = LockerViewModel()
+        let lockerViewController = LockerViewController(viewModel: lockerViewModel)
+        DIContainer.shared.register(LockerViewController.self, dependency: lockerViewController)
     }
 }
