@@ -76,9 +76,8 @@
 		924BC6422C64D635009E5463 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				924BC6442C64E416009E5463 /* Locker */,
 				924BC6382C6452F4009E5463 /* TabBarController.swift */,
-				924BC6402C648E03009E5463 /* PhotoCell.swift */,
-				924BC6282C634000009E5463 /* LockerViewController.swift */,
 				924BC63A2C645401009E5463 /* ForYouViewController.swift */,
 				924BC63C2C645419009E5463 /* AlbumViewController.swift */,
 				924BC63E2C64542B009E5463 /* SearchViewController.swift */,
@@ -93,6 +92,15 @@
 				924BC6262C634000009E5463 /* SceneDelegate.swift */,
 			);
 			path = Application;
+			sourceTree = "<group>";
+		};
+		924BC6442C64E416009E5463 /* Locker */ = {
+			isa = PBXGroup;
+			children = (
+				924BC6402C648E03009E5463 /* PhotoCell.swift */,
+				924BC6282C634000009E5463 /* LockerViewController.swift */,
+			);
+			path = Locker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
