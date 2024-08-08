@@ -11,6 +11,12 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpViewControllers()
+        UITabBar.appearance().backgroundColor = .white
+        tabBar.barTintColor = .white
+                
+        //그림자 및 테두리 제거
+        tabBar.backgroundImage = nil
+        tabBar.shadowImage = nil
     }
     
     private func setUpViewControllers() {
