@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  LockerViewController.swift
 //  PhotosClone
 //
 //  Created by minsong kim on 8/7/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LockerViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
