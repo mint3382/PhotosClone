@@ -17,6 +17,7 @@
 		924BC63D2C645419009E5463 /* AlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC63C2C645419009E5463 /* AlbumViewController.swift */; };
 		924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC63E2C64542B009E5463 /* SearchViewController.swift */; };
 		924BC6412C648E03009E5463 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6402C648E03009E5463 /* PhotoCell.swift */; };
+		924BC6522C64F5FB009E5463 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6512C64F5FB009E5463 /* DIContainer.swift */; };
 		924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6562C64FBF4009E5463 /* UIControl+.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		924BC63C2C645419009E5463 /* AlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumViewController.swift; sourceTree = "<group>"; };
 		924BC63E2C64542B009E5463 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		924BC6402C648E03009E5463 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		924BC6512C64F5FB009E5463 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		924BC6562C64FBF4009E5463 /* UIControl+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +94,7 @@
 			children = (
 				924BC6242C634000009E5463 /* AppDelegate.swift */,
 				924BC6262C634000009E5463 /* SceneDelegate.swift */,
+				924BC6512C64F5FB009E5463 /* DIContainer.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -175,6 +178,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				924BC6522C64F5FB009E5463 /* DIContainer.swift in Sources */,
 				924BC63D2C645419009E5463 /* AlbumViewController.swift in Sources */,
 				924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */,
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
