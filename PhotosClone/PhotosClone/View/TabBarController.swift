@@ -46,8 +46,9 @@ class TabBarController: UITabBarController {
     }
     
     private func registerLockerViewControllers() {
+        let dateViewModel = DateViewModel()
         let allPhotosViewController = AllPhotosViewController()
-        let dayPhotosViewController = DayPhotosViewController()
+        let dayPhotosViewController = DayPhotosViewController(viewModel: dateViewModel)
         let monthPhotosViewController = MonthPhotosViewController()
         let yearPhotosViewController = YearPhotosViewController()
         

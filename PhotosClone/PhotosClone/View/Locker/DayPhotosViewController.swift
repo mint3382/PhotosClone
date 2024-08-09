@@ -5,6 +5,7 @@
 //  Created by minsong kim on 8/8/24.
 //
 
+import Combine
 import UIKit
 import Photos
 
@@ -18,6 +19,14 @@ class DayPhotosViewController: UIViewController {
         return label
     }()
     
+    let loadingIndicatorView: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .large)
+        view.color = .gray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
     private var photosByDate: [Date: [PHAsset]] = [:]
     private var dateSection: Set<Date> = []
     private var sortedDateSection: [Date] = []
@@ -28,9 +37,22 @@ class DayPhotosViewController: UIViewController {
     private let imageManager = PHCachingImageManager()
     private var imageSize: CGSize = .zero
     
+    var viewModel: DateViewModel
+    var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: DateViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        configureIndicatorView()
         
         if allPhotos == nil {
             let allPhotosOptions = PHFetchOptions()
@@ -38,24 +60,35 @@ class DayPhotosViewController: UIViewController {
             allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
             categorizePhotosByDate()
         }
-        configureCollectionView()
-        configureSectionTitleLabel()
+        
+        bind()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        scrollToBottom()
+    private func bind() {
+        viewModel.output.removeIndicator
+            .sink { [weak self] in
+                self?.loadingIndicatorView.removeFromSuperview()
+            }
+            .store(in: &cancellables)
     }
     
     private func categorizePhotosByDate() {
-        allPhotos?.enumerateObjects { (asset, _, _) in
-            if let creationDate = asset.creationDate {
-                self.dateSection.insert(creationDate)
-                self.photosByDate[creationDate, default: []].append(asset)
+        Task {
+            allPhotos?.enumerateObjects { (asset, _, _) in
+                if let creationDate = asset.creationDate {
+                    self.dateSection.insert(creationDate)
+                    self.photosByDate[creationDate, default: []].append(asset)
+                }
             }
+            sortedDateSection = Array(dateSection).sorted()
+            viewModel.input.fetchAllDailyPhotos.send()
         }
-        sortedDateSection = Array(dateSection).sorted()
+        
+        Task { @MainActor in
+            configureCollectionView()
+            configureSectionTitleLabel()
+            scrollToBottom()
+        }
     }
     
     private func scrollToBottom() {
@@ -71,6 +104,16 @@ class DayPhotosViewController: UIViewController {
         
         let additionalScrollHeight: CGFloat = 50.0
         collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentOffset.y + additionalScrollHeight)
+    }
+    
+    private func configureIndicatorView() {
+        view.addSubview(loadingIndicatorView)
+        loadingIndicatorView.startAnimating()
+        
+        NSLayoutConstraint.activate([
+            loadingIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     //컬렉션뷰 설정
