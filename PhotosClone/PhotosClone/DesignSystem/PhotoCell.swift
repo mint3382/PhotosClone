@@ -45,7 +45,7 @@ class PhotoCell: UICollectionViewCell, Identifiable {
         configureTitleLabel()
     }
     
-    func configureCell() {
+    func configureCellShadowAndCornerRadius() {
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
         
