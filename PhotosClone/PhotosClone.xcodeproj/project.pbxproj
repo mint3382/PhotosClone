@@ -25,6 +25,7 @@
 		924BC6522C64F5FB009E5463 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6512C64F5FB009E5463 /* DIContainer.swift */; };
 		924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6562C64FBF4009E5463 /* UIControl+.swift */; };
 		924BC6592C65FCB5009E5463 /* DateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6582C65FCB5009E5463 /* DateViewModel.swift */; };
+		924BC65B2C661081009E5463 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC65A2C661081009E5463 /* HeaderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		924BC6512C64F5FB009E5463 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		924BC6562C64FBF4009E5463 /* UIControl+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+.swift"; sourceTree = "<group>"; };
 		924BC6582C65FCB5009E5463 /* DateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewModel.swift; sourceTree = "<group>"; };
+		924BC65A2C661081009E5463 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +141,7 @@
 			children = (
 				924BC6402C648E03009E5463 /* PhotoCell.swift */,
 				924BC6562C64FBF4009E5463 /* UIControl+.swift */,
+				924BC65A2C661081009E5463 /* HeaderView.swift */,
 			);
 			path = DesignSystem;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 				924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */,
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
 				924BC6292C634000009E5463 /* LockerViewController.swift in Sources */,
+				924BC65B2C661081009E5463 /* HeaderView.swift in Sources */,
 				924BC6392C6452F4009E5463 /* TabBarController.swift in Sources */,
 				924BC6502C64E846009E5463 /* LockerViewModel.swift in Sources */,
 				924BC6592C65FCB5009E5463 /* DateViewModel.swift in Sources */,
