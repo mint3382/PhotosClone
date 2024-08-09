@@ -50,7 +50,7 @@ class TabBarController: UITabBarController {
         let allPhotosViewController = AllPhotosViewController()
         let dayPhotosViewController = DayPhotosViewController(viewModel: dateViewModel)
         let monthPhotosViewController = MonthPhotosViewController(viewModel: dateViewModel)
-        let yearPhotosViewController = YearPhotosViewController()
+        let yearPhotosViewController = YearPhotosViewController(viewModel: dateViewModel)
         
         DIContainer.shared.register(AllPhotosViewController.self, dependency: allPhotosViewController)
         DIContainer.shared.register(DayPhotosViewController.self, dependency: dayPhotosViewController)

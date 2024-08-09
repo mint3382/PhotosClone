@@ -223,7 +223,7 @@ class MonthPhotosViewController: UIViewController {
                     }
                 }
                 
-                cell.configureCell()
+                cell.configureCellShadowAndCornerRadius()
                 
                 return cell
         })
