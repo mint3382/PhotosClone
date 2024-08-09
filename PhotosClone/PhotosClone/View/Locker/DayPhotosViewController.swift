@@ -35,7 +35,6 @@ class DayPhotosViewController: UIViewController {
     
     private var allPhotos: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
-    private var imageSize: CGSize = .zero
     
     var viewModel: DateViewModel
     var cancellables = Set<AnyCancellable>()
@@ -231,8 +230,7 @@ class DayPhotosViewController: UIViewController {
                     return UICollectionViewCell()
                 }
                 
-                let imageManager = PHImageManager.default()
-                imageManager.requestImage(for: asset, targetSize: CGSize(width: 300, height: 300), contentMode: .aspectFill, options: nil) { image, _ in
+                self.imageManager.requestImage(for: asset, targetSize: CGSize(width: 300, height: 300), contentMode: .aspectFill, options: nil) { image, _ in
                     if let image = image {
                         cell.configureImage(image: image)
                     }
@@ -261,6 +259,4 @@ class DayPhotosViewController: UIViewController {
     }
 }
 
-extension DayPhotosViewController: UICollectionViewDelegate {
-    
-}
+extension DayPhotosViewController: UICollectionViewDelegate { }
