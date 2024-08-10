@@ -75,10 +75,10 @@ class LockerViewController: UIViewController {
         
         childViewController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            childViewController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            childViewController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            childViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            childViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            childViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            childViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            childViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            childViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     

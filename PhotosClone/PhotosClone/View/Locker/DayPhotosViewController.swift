@@ -27,11 +27,17 @@ class DayPhotosViewController: UIViewController {
         return view
     }()
     
-    private var photosByDate: [Date: [PHAsset]] = [:]
-    private var dateSection: Set<Date> = []
-    private var sortedDateSection: [Date] = []
+    private var photosByDate: [String: [PHAsset]] = [:]
+    private var dateSection: Set<String> = []
+    private var sortedDateSection: [String] = []
     private var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Date, PHAsset>?
+    private var dataSource: UICollectionViewDiffableDataSource<String, PHAsset>?
+    private let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy년 MM월 dd일"
+        
+        return dateFormatter
+    }()
     
     private var allPhotos: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
@@ -54,9 +60,7 @@ class DayPhotosViewController: UIViewController {
         configureIndicatorView()
         
         if allPhotos == nil {
-            let allPhotosOptions = PHFetchOptions()
-            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-            allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
+            allPhotos = PHAsset.fetchAssets(with: nil)
             categorizePhotosByDate()
         }
         
@@ -75,8 +79,9 @@ class DayPhotosViewController: UIViewController {
         Task {
             allPhotos?.enumerateObjects { (asset, _, _) in
                 if let creationDate = asset.creationDate {
-                    self.dateSection.insert(creationDate)
-                    self.photosByDate[creationDate, default: []].append(asset)
+                    let day = self.dateFormatter.string(from: creationDate)
+                    self.dateSection.insert(day)
+                    self.photosByDate[day, default: []].append(asset)
                 }
             }
             sortedDateSection = Array(dateSection).sorted()
@@ -139,10 +144,10 @@ class DayPhotosViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
     
@@ -150,6 +155,7 @@ class DayPhotosViewController: UIViewController {
     private func registerCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
         collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.id)
+        collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
         
         collectionView.setCollectionViewLayout(createLayout(), animated: true)
         collectionView.delegate = self
@@ -157,7 +163,7 @@ class DayPhotosViewController: UIViewController {
     
     //컬렉션뷰 레이아웃 등록
     private func createLayout() -> UICollectionViewCompositionalLayout {
-        UICollectionViewCompositionalLayout(sectionProvider: { [weak self] sectionIndex, _ in
+        return UICollectionViewCompositionalLayout(sectionProvider: { [weak self] sectionIndex, _ in
             guard let self = self else {
                 return NSCollectionLayoutSection(group: NSCollectionLayoutGroup(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0))))
             }
@@ -166,19 +172,19 @@ class DayPhotosViewController: UIViewController {
             let dateSectionIndex = sortedDateSection[sectionIndex]
             let itemCount = photosByDate[dateSectionIndex]?.count ?? 1
             
-            let section: NSCollectionLayoutSection
-            if itemCount >= 3 {
-                section = self.create3ItemSection()
+            let layoutSection: NSCollectionLayoutSection
+            if itemCount % 3 == 0 {
+                layoutSection = self.create3ItemSection()
             } else {
-                section = self.create1ItemSection()
+                layoutSection = self.create1ItemSection()
             }
             
             // 마지막 섹션에만 추가적인 inset을 적용
             if sectionIndex == self.sortedDateSection.count - 1 {
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 50, trailing: 0)
+                layoutSection.contentInsets = NSDirectionalEdgeInsets(top: 1, leading: 0, bottom: 50, trailing: 0)
             }
             
-            return section
+            return layoutSection
         })
     }
     
@@ -189,11 +195,18 @@ class DayPhotosViewController: UIViewController {
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-        group.interItemSpacing = .fixed(8)
-        
+    
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 8
         
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                heightDimension: .estimated(30))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, containerAnchor: NSCollectionLayoutAnchor(edges: [.top, .leading], fractionalOffset: CGPoint(x: 4, y: -36)))
+        sectionHeader.pinToVisibleBounds = true
+        sectionHeader.zIndex = Int.max
+        sectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 12, bottom: 0, trailing: 12)
+        section.boundarySupplementaryItems = [sectionHeader]
+        section.contentInsets = NSDirectionalEdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0)
+
         return section
     }
     
@@ -214,14 +227,25 @@ class DayPhotosViewController: UIViewController {
             layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                heightDimension: .fractionalHeight(0.4)),
             subitems: [leadingItem, trailingGroup])
+        
         let section = NSCollectionLayoutSection(group: nestedGroup)
+        
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                heightDimension: .estimated(30))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, containerAnchor: NSCollectionLayoutAnchor(edges: [.top, .leading], fractionalOffset: CGPoint(x: 4, y: -36)))
+        sectionHeader.pinToVisibleBounds = true
+        sectionHeader.zIndex = Int.max
+        sectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 12, bottom: 0, trailing: 12)
+        
+        section.boundarySupplementaryItems = [sectionHeader]
+        section.contentInsets = NSDirectionalEdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0)
         
         return section
     }
     
     //디퍼블 데이터 소스 세팅
     private func setDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Date, PHAsset>(
+        dataSource = UICollectionViewDiffableDataSource<String, PHAsset>(
             collectionView: collectionView,
             cellProvider: { collectionView, indexPath, asset in
                 guard let cell = collectionView.dequeueReusableCell(
@@ -236,19 +260,23 @@ class DayPhotosViewController: UIViewController {
                     }
                 }
                 
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy년 MM월 dd일"
-                if let currentDate = asset.creationDate {
-                    self.sectionTitleLabel.text = dateFormatter.string(from: currentDate)
-                }
-                
                 return cell
         })
+        
+        let headerRegistration = UICollectionView.SupplementaryRegistration<HeaderView>(elementKind: UICollectionView.elementKindSectionHeader) {
+            supplementaryView, elementKind, indexPath in
+            let day = self.sortedDateSection[indexPath.section]
+            supplementaryView.configureLabel(text: day, fontSize: 20.0, color: .white)
+        }
+        
+        dataSource?.supplementaryViewProvider = { [weak self] (view, kind, index) in
+            self?.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: index)
+        }
     }
     
     //스냅샷 세팅
     private func setSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Date, PHAsset>()
+        var snapshot = NSDiffableDataSourceSnapshot<String, PHAsset>()
         snapshot.appendSections(sortedDateSection)
         
         for (date, dayAssets) in photosByDate {
