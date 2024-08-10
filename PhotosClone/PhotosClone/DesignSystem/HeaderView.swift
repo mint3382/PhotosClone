@@ -12,7 +12,7 @@ class HeaderView: UICollectionReusableView {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 32)
+        label.font = UIFont.boldSystemFont(ofSize: 28)
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -28,8 +28,10 @@ class HeaderView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureLabel(text: String) {
+    func configureLabel(text: String?, fontSize: CGFloat = 28.0, color: UIColor = .black) {
         titleLabel.text = text
+        titleLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
+        titleLabel.textColor = color
     }
 
     func configureLabelUI() {
