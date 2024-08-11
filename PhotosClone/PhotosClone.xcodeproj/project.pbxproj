@@ -112,9 +112,9 @@
 			children = (
 				924BC6382C6452F4009E5463 /* TabBarController.swift */,
 				924BC6442C64E416009E5463 /* Locker */,
+				924BC66A2C69110A009E5463 /* ForYou */,
 				924BC6602C688059009E5463 /* Album */,
-				924BC63A2C645401009E5463 /* ForYouViewController.swift */,
-				924BC63E2C64542B009E5463 /* SearchViewController.swift */,
+				924BC66B2C69111B009E5463 /* Search */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -178,6 +178,22 @@
 				924BC6642C6880AA009E5463 /* AlbumItem.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		924BC66A2C69110A009E5463 /* ForYou */ = {
+			isa = PBXGroup;
+			children = (
+				924BC63A2C645401009E5463 /* ForYouViewController.swift */,
+			);
+			path = ForYou;
+			sourceTree = "<group>";
+		};
+		924BC66B2C69111B009E5463 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				924BC63E2C64542B009E5463 /* SearchViewController.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
