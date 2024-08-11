@@ -75,12 +75,12 @@ class YearPhotosViewController: UIViewController {
             }
             
             sortedDateSection = Array(dateSection).sorted()
-        }
-        
-        Task { @MainActor in
-            configureCollectionView()
-            scrollToBottom()
-            viewModel.input.fetchAllDailyPhotos.send()
+            
+            await MainActor.run {
+                configureCollectionView()
+                scrollToBottom()
+                viewModel.input.fetchAllDailyPhotos.send()
+            }
         }
     }
     

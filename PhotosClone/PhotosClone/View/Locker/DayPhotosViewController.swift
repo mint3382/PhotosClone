@@ -85,13 +85,13 @@ class DayPhotosViewController: UIViewController {
                 }
             }
             sortedDateSection = Array(dateSection).sorted()
-        }
-        
-        Task { @MainActor in
-            configureCollectionView()
-            configureSectionTitleLabel()
-            scrollToBottom()
-            viewModel.input.fetchAllDailyPhotos.send()
+            
+            await MainActor.run {
+                configureCollectionView()
+                configureSectionTitleLabel()
+                scrollToBottom()
+                viewModel.input.fetchAllDailyPhotos.send()
+            }
         }
     }
     
@@ -173,8 +173,8 @@ class DayPhotosViewController: UIViewController {
             let itemCount = photosByDate[dateSectionIndex]?.count ?? 1
             
             let layoutSection: NSCollectionLayoutSection
-            if itemCount % 3 == 0 {
-                layoutSection = self.create3ItemSection()
+            if itemCount % 4 == 0 {
+                layoutSection = self.create4ItemSection()
             } else {
                 layoutSection = self.create1ItemSection()
             }
@@ -210,22 +210,16 @@ class DayPhotosViewController: UIViewController {
         return section
     }
     
-    private func create3ItemSection() -> NSCollectionLayoutSection {
+    private func create4ItemSection() -> NSCollectionLayoutSection {
         let leadingItem = NSCollectionLayoutItem(
-            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7),
-                                               heightDimension: .fractionalHeight(1.0)))
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalHeight(1.0)))
         
         let trailingItem = NSCollectionLayoutItem(
-            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                               heightDimension: .fractionalHeight(0.3)))
-        let trailingGroup = NSCollectionLayoutGroup.vertical(
-            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.3),
-                                               heightDimension: .fractionalHeight(1.0)),
-            subitem: trailingItem, count: 2)
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.333)))
+        let trailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.3), heightDimension: .fractionalHeight(1.0)), subitems: [trailingItem])
         
         let nestedGroup = NSCollectionLayoutGroup.horizontal(
-            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                               heightDimension: .fractionalHeight(0.4)),
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0)),
             subitems: [leadingItem, trailingGroup])
         
         let section = NSCollectionLayoutSection(group: nestedGroup)
