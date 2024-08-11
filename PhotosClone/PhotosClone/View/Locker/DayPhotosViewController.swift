@@ -85,13 +85,13 @@ class DayPhotosViewController: UIViewController {
                 }
             }
             sortedDateSection = Array(dateSection).sorted()
-            viewModel.input.fetchAllDailyPhotos.send()
         }
         
         Task { @MainActor in
             configureCollectionView()
             configureSectionTitleLabel()
             scrollToBottom()
+            viewModel.input.fetchAllDailyPhotos.send()
         }
     }
     
@@ -154,7 +154,7 @@ class DayPhotosViewController: UIViewController {
     //컬렉션뷰 등록
     private func registerCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.id)
+        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
         
         collectionView.setCollectionViewLayout(createLayout(), animated: true)
@@ -249,7 +249,7 @@ class DayPhotosViewController: UIViewController {
             collectionView: collectionView,
             cellProvider: { collectionView, indexPath, asset in
                 guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: PhotoCell.id,
+                    withReuseIdentifier: PhotoCell.identifier,
                     for: indexPath) as? PhotoCell else {
                     return UICollectionViewCell()
                 }
@@ -266,7 +266,9 @@ class DayPhotosViewController: UIViewController {
         let headerRegistration = UICollectionView.SupplementaryRegistration<HeaderView>(elementKind: UICollectionView.elementKindSectionHeader) {
             supplementaryView, elementKind, indexPath in
             let day = self.sortedDateSection[indexPath.section]
-            supplementaryView.configureLabel(text: day, fontSize: 20.0, color: .white)
+            supplementaryView.configureLabelUI()
+            supplementaryView.configureLabel(text: day, fontSize: 20.0)
+            supplementaryView.changeTitleColor(.white)
         }
         
         dataSource?.supplementaryViewProvider = { [weak self] (view, kind, index) in

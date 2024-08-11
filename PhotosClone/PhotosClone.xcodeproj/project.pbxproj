@@ -30,6 +30,7 @@
 		924BC65F2C667A8B009E5463 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC65E2C667A8B009E5463 /* PhotoManager.swift */; };
 		924BC6632C68808A009E5463 /* AlbumSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6622C688089009E5463 /* AlbumSection.swift */; };
 		924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6642C6880AA009E5463 /* AlbumItem.swift */; };
+		924BC6672C68883E009E5463 /* PhotosInAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6662C68883E009E5463 /* PhotosInAlbumViewController.swift */; };
 		924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6682C68888A009E5463 /* AlbumViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 		924BC65E2C667A8B009E5463 /* PhotoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
 		924BC6622C688089009E5463 /* AlbumSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSection.swift; sourceTree = "<group>"; };
 		924BC6642C6880AA009E5463 /* AlbumItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItem.swift; sourceTree = "<group>"; };
+		924BC6662C68883E009E5463 /* PhotosInAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosInAlbumViewController.swift; sourceTree = "<group>"; };
 		924BC6682C68888A009E5463 /* AlbumViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -255,6 +257,7 @@
 				924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */,
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
 				924BC6292C634000009E5463 /* LockerViewController.swift in Sources */,
+				924BC6672C68883E009E5463 /* PhotosInAlbumViewController.swift in Sources */,
 				924BC65B2C661081009E5463 /* HeaderView.swift in Sources */,
 				924BC6632C68808A009E5463 /* AlbumSection.swift in Sources */,
 				924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */,

@@ -24,7 +24,6 @@ class MonthPhotosViewController: UIViewController {
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Date, PHAsset>?
     
-    private var allPhotos: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
     let dateFormatter = DateFormatter()
     
@@ -44,12 +43,7 @@ class MonthPhotosViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         configureIndicatorView()
-        
-        if allPhotos == nil {
-            allPhotos = PHAsset.fetchAssets(with: nil)
-            categorizePhotosByDate()
-        }
-        
+        categorizePhotosByDate()
         bind()
     }
     
@@ -64,7 +58,8 @@ class MonthPhotosViewController: UIViewController {
     private func categorizePhotosByDate() {
         var dayDateSet = Set<Date>()
         Task {
-            allPhotos?.enumerateObjects { [weak self] (asset, _, _) in
+            let allPhotos = PhotoManager.shared.allPhotos
+            allPhotos.enumerateObjects { [weak self] (asset, _, _) in
                 self?.dateFormatter.dateFormat = "yyyy년 MM월"
                 
                 guard let self, let creationDate = asset.creationDate else {
@@ -90,12 +85,12 @@ class MonthPhotosViewController: UIViewController {
             }
             
             sortedDateSection = Array(dateSection).sorted()
-            viewModel.input.fetchAllDailyPhotos.send()
         }
         
         Task { @MainActor in
             configureCollectionView()
             scrollToBottom()
+            viewModel.input.fetchAllDailyPhotos.send()
         }
     }
     
@@ -148,7 +143,7 @@ class MonthPhotosViewController: UIViewController {
     //컬렉션뷰 등록
     private func registerCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.id)
+        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
         
         collectionView.setCollectionViewLayout(createLayout(), animated: true)
@@ -199,7 +194,7 @@ class MonthPhotosViewController: UIViewController {
             collectionView: collectionView,
             cellProvider: { collectionView, indexPath, asset in
                 guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: PhotoCell.id,
+                    withReuseIdentifier: PhotoCell.identifier,
                     for: indexPath) as? PhotoCell else {
                     return UICollectionViewCell()
                 }
@@ -240,6 +235,7 @@ class MonthPhotosViewController: UIViewController {
             
             let titleDate = dateFormatter.string(from: date)
             
+            supplementaryView.configureLabelUI()
             supplementaryView.configureLabel(text: titleDate)
         }
         

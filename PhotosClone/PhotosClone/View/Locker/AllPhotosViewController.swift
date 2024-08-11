@@ -12,7 +12,6 @@ class AllPhotosViewController: UIViewController {
     private lazy var flowLayout = self.createFlowLayout()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.flowLayout)
     
-    private var fetchAsset: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
     private var imageSize: CGSize = .zero
     
@@ -20,11 +19,9 @@ class AllPhotosViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        if fetchAsset == nil {
-            let allPhotosOptions = PHFetchOptions()
-            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-            fetchAsset = PHAsset.fetchAssets(with: allPhotosOptions)
-        }
+        let dateOptions = PHFetchOptions()
+        dateOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        PhotoManager.shared.fetchPhotos(with: dateOptions)
         
         configureCollectionView()
         configureCollectionViewUI()
@@ -45,8 +42,8 @@ class AllPhotosViewController: UIViewController {
     }
     
     private func scrollToBottom() {
-        guard let fetchAsset = fetchAsset,
-                fetchAsset.count > 0 else {
+        let fetchAsset = PhotoManager.shared.allPhotos
+        guard fetchAsset.count > 0 else {
             return
         }
         
@@ -76,7 +73,7 @@ class AllPhotosViewController: UIViewController {
     private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.id)
+        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
     }
     
     private func createFlowLayout() -> UICollectionViewFlowLayout {
@@ -95,17 +92,14 @@ class AllPhotosViewController: UIViewController {
 extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        return fetchAsset?.count ?? 0
+        return PhotoManager.shared.allPhotos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let asset = fetchAsset?.object(at: indexPath.item) else {
-            fatalError("Failed Asset unwrapping")
-        }
-        
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.id, for: indexPath) as? PhotoCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
             fatalError("Unexpected cell in collection view")
         }
+        let asset = PhotoManager.shared.allPhotos.object(at: indexPath.item)
         
         cell.representedAssetIdentifier = asset.localIdentifier
         imageManager.requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in

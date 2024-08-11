@@ -23,7 +23,7 @@ class TabBarController: UITabBarController {
     private func setUpViewControllers() {
         let locker = DIContainer.shared.resolve(LockerViewController.self)
         let forYou = ForYouViewController()
-        let album = AlbumViewController()
+        let album = UINavigationController(rootViewController: AlbumViewController(viewModel: AlbumViewModel()))
         let search = SearchViewController()
         
         locker.tabBarItem.image = UIImage(systemName: "photo.fill.on.rectangle.fill")
