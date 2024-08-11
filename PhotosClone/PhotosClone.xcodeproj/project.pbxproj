@@ -27,6 +27,8 @@
 		924BC6592C65FCB5009E5463 /* DateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6582C65FCB5009E5463 /* DateViewModel.swift */; };
 		924BC65B2C661081009E5463 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC65A2C661081009E5463 /* HeaderView.swift */; };
 		924BC65D2C6671B8009E5463 /* AlbumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC65C2C6671B8009E5463 /* AlbumCell.swift */; };
+		924BC6632C68808A009E5463 /* AlbumSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6622C688089009E5463 /* AlbumSection.swift */; };
+		924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6642C6880AA009E5463 /* AlbumItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 		924BC6582C65FCB5009E5463 /* DateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewModel.swift; sourceTree = "<group>"; };
 		924BC65A2C661081009E5463 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		924BC65C2C6671B8009E5463 /* AlbumCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumCell.swift; sourceTree = "<group>"; };
+		924BC6622C688089009E5463 /* AlbumSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSection.swift; sourceTree = "<group>"; };
+		924BC6642C6880AA009E5463 /* AlbumItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				924BC6432C64D651009E5463 /* Application */,
+				924BC6612C688076009E5463 /* Model */,
 				924BC6422C64D635009E5463 /* View */,
 				924BC64E2C64E825009E5463 /* ViewModel */,
 				924BC6552C64FBDD009E5463 /* DesignSystem */,
@@ -147,6 +152,24 @@
 				924BC65A2C661081009E5463 /* HeaderView.swift */,
 			);
 			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		924BC6602C688059009E5463 /* Album */ = {
+			isa = PBXGroup;
+			children = (
+				924BC63C2C645419009E5463 /* AlbumViewController.swift */,
+				924BC6662C68883E009E5463 /* PhotosInAlbumViewController.swift */,
+			);
+			path = Album;
+			sourceTree = "<group>";
+		};
+		924BC6612C688076009E5463 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				924BC6622C688089009E5463 /* AlbumSection.swift */,
+				924BC6642C6880AA009E5463 /* AlbumItem.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,6 +249,8 @@
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
 				924BC6292C634000009E5463 /* LockerViewController.swift in Sources */,
 				924BC65B2C661081009E5463 /* HeaderView.swift in Sources */,
+				924BC6632C68808A009E5463 /* AlbumSection.swift in Sources */,
+				924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */,
 				924BC6392C6452F4009E5463 /* TabBarController.swift in Sources */,
 				924BC6502C64E846009E5463 /* LockerViewModel.swift in Sources */,
 				924BC6592C65FCB5009E5463 /* DateViewModel.swift in Sources */,
