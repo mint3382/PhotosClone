@@ -142,7 +142,7 @@ extension PhotosInAlbumViewController: UICollectionViewDataSource, UICollectionV
         }
         
         header.configureLabelUI(leading: 16, trailing: 16)
-        header.configureLabel(text: viewModel.albumItem.title, fontSize: 20)
+        header.configureLabel(text: viewModel.albumTitle, fontSize: 20)
         
         return header
     }

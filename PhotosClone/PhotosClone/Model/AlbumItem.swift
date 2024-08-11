@@ -70,7 +70,6 @@ enum AlbumItem: Int, Hashable {
     }
     
     var image: UIImage {
-//        let asset = PHAsset.fetchAssets(in: collection, options: nil)
         var firstImage: UIImage?
         switch self {
         case .video:
@@ -135,7 +134,9 @@ enum AlbumItem: Int, Hashable {
                 .fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumLivePhotos, options: nil)
                 .object(at: 0)
         case .personMode:
-            return PHAssetCollection()
+            return PHAssetCollection
+                .fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumDepthEffect, options: nil)
+                .object(at: 0)
         case .panorama:
             return PHAssetCollection
                 .fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: nil)

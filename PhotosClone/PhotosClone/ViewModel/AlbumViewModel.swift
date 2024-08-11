@@ -11,7 +11,7 @@ import Photos
 
 class AlbumViewModel {
     struct Input {
-        let tappedAlbumItem = PassthroughSubject<AlbumItem, Never>()
+        let tappedAlbumItem = PassthroughSubject<(title: String, collection: PHAssetCollection), Never>()
     }
     
     struct Output {
@@ -21,7 +21,8 @@ class AlbumViewModel {
     private var cancellables = Set<AnyCancellable>()
     let input: Input
     let output: Output
-    var albumItem: AlbumItem = .video
+    var albumCollection: PHAssetCollection = PHAssetCollection()
+    var albumTitle: String = ""
     var assets: [PHAsset] = []
     
     init() {
@@ -33,7 +34,8 @@ class AlbumViewModel {
     func settingBind() {
         input.tappedAlbumItem
             .sink { [weak self] album in
-                self?.albumItem = album
+                self?.albumCollection = album.collection
+                self?.albumTitle = album.title
                 self?.assets = PhotoManager.shared.fetchAssetsFromCollection(album.collection)
 //                self?.output.loadingAlbumPhotos.send(assets)
             }
