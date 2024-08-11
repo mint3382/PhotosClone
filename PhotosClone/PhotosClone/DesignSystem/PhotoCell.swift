@@ -8,7 +8,7 @@
 import UIKit
 
 class PhotoCell: UICollectionViewCell, Identifiable {
-    static let id = "PhotoCell"
+    static let identifier = "PhotoCell"
     var representedAssetIdentifier: String = ""
     let titleLabel: UILabel = {
         let label = UILabel()
