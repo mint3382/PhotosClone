@@ -29,6 +29,7 @@
 		924BC65D2C6671B8009E5463 /* AlbumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC65C2C6671B8009E5463 /* AlbumCell.swift */; };
 		924BC6632C68808A009E5463 /* AlbumSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6622C688089009E5463 /* AlbumSection.swift */; };
 		924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6642C6880AA009E5463 /* AlbumItem.swift */; };
+		924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6682C68888A009E5463 /* AlbumViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		924BC65C2C6671B8009E5463 /* AlbumCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumCell.swift; sourceTree = "<group>"; };
 		924BC6622C688089009E5463 /* AlbumSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumSection.swift; sourceTree = "<group>"; };
 		924BC6642C6880AA009E5463 /* AlbumItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItem.swift; sourceTree = "<group>"; };
+		924BC6682C68888A009E5463 /* AlbumViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +141,7 @@
 			children = (
 				924BC64F2C64E846009E5463 /* LockerViewModel.swift */,
 				924BC6582C65FCB5009E5463 /* DateViewModel.swift */,
+				924BC6682C68888A009E5463 /* AlbumViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -246,6 +249,7 @@
 				924BC6462C64E466009E5463 /* AllPhotosViewController.swift in Sources */,
 				924BC63D2C645419009E5463 /* AlbumViewController.swift in Sources */,
 				924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */,
+				924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */,
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
 				924BC6292C634000009E5463 /* LockerViewController.swift in Sources */,
 				924BC65B2C661081009E5463 /* HeaderView.swift in Sources */,
