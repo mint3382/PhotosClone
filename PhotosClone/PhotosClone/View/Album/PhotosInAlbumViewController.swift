@@ -37,6 +37,7 @@ class PhotosInAlbumViewController: UIViewController {
         navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
         navigationController?.navigationBar.backgroundColor = .clear
         navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.topItem?.title = ""
         
         configureCollectionView()
         configureCollectionViewUI()
@@ -121,7 +122,7 @@ extension PhotosInAlbumViewController: UICollectionViewDataSource, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
-            fatalError("Unexpected cell in collection view")
+            return UICollectionViewCell()
         }
         
         let asset = album[indexPath.item]
@@ -145,6 +146,13 @@ extension PhotosInAlbumViewController: UICollectionViewDataSource, UICollectionV
         header.configureLabel(text: viewModel.albumTitle, fontSize: 20)
         
         return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photoViewModel = DIContainer.shared.resolve(PhotoViewModel.self)
+        photoViewModel.input.tappedPhotoItem.send((album, indexPath))
+        let next = PhotoPageViewController(viewModel: photoViewModel)
+        self.navigationController?.pushViewController(next, animated: false)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

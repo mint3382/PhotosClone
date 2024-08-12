@@ -149,7 +149,7 @@ class AlbumViewController: UIViewController {
             collectionView: collectionView,
             cellProvider: { collectionView, indexPath, collection in
                 guard let section = AlbumSection(rawValue: indexPath.section) else {
-                    fatalError("Unknown section")
+                    return UICollectionViewCell()
                 }
                 
                 if section == .myAlbum {

@@ -110,7 +110,7 @@ extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
-            fatalError("Unexpected cell in collection view")
+            return UICollectionViewCell()
         }
         let asset = PhotoManager.shared.allPhotos[indexPath.item]
         
