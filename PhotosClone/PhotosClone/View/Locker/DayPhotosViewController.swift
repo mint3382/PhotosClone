@@ -61,6 +61,11 @@ class DayPhotosViewController: UIViewController {
         bind()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollToBottom()
+    }
+    
     private func bind() {
         viewModel.output.handleIndicator
             .sink { [weak self] in
@@ -94,7 +99,6 @@ class DayPhotosViewController: UIViewController {
             await MainActor.run {
                 configureCollectionView()
                 configureSectionTitleLabel()
-                scrollToBottom()
                 viewModel.input.readyPhotos.send()
             }
         }

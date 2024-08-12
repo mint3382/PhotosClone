@@ -47,6 +47,11 @@ class YearPhotosViewController: UIViewController {
         bind()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollToBottom()
+    }
+    
     private func bind() {
         viewModel.output.handleIndicator
             .sink { [weak self] in
@@ -56,7 +61,6 @@ class YearPhotosViewController: UIViewController {
     }
     
     private func categorizePhotosByDate() {
-        var dayDateSet = Set<Date>()
         Task {
             PhotoManager.shared.allPhotos.forEach { [weak self] asset in
                 self?.dateFormatter.dateFormat = "yyyy년"
@@ -78,17 +82,12 @@ class YearPhotosViewController: UIViewController {
             
             await MainActor.run {
                 configureCollectionView()
-                scrollToBottom()
                 viewModel.input.readyPhotos.send()
             }
         }
     }
     
     private func scrollToBottom() {
-        guard let lastSection = sortedDateSection.last else {
-            return
-        }
-        
         let lastIndexPath = IndexPath(item: 0, section: dateSection.count - 1)
         
         collectionView.scrollToItem(at: lastIndexPath, at: .bottom, animated: false)
