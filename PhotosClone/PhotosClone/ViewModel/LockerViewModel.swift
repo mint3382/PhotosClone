@@ -7,21 +7,28 @@
 
 import Combine
 import UIKit
+import Photos
 
 class LockerViewModel {
     struct Input {
         let timePeriodSegmentControlSelected = PassthroughSubject<Int, Never>()
+        let tappedPhotoItem = PassthroughSubject<(assets:[PHAsset], photoIndex: IndexPath), Never>()
+        let tappedCollectionItem = PassthroughSubject<Date, Never>()
+        let readyPhotos = PassthroughSubject<Void, Never>()
     }
     
     struct Output {
-        let viewTransitionSubject = PassthroughSubject<(past: UIViewController, current: UIViewController), Never>()
+        let handleChildViewController = PassthroughSubject<Int, Never>()
+        let handlePhotoItem = PassthroughSubject<Int, Never>()
+        let handleCollectionItem = PassthroughSubject<Date, Never>()
+        let handleIndicator = PassthroughSubject<Void, Never>()
     }
     
     private var cancellables = Set<AnyCancellable>()
     let input: Input
     let output: Output
     
-    private var pastChildViewController: UIViewController = DIContainer.shared.resolve(AllPhotosViewController.self)
+    private var currentControlNumber: Int = 3
     
     init() {
         self.input = Input()
@@ -35,25 +42,37 @@ class LockerViewModel {
                 guard let self else {
                     return
                 }
-                
-                switch selectedNumber {
-                case 0:
-                    let currentViewController = DIContainer.shared.resolve(YearPhotosViewController.self)
-                    output.viewTransitionSubject.send((pastChildViewController,currentViewController))
-                    pastChildViewController = currentViewController
-                case 1:
-                    let currentViewController = DIContainer.shared.resolve(MonthPhotosViewController.self)
-                    output.viewTransitionSubject.send((pastChildViewController,currentViewController))
-                    pastChildViewController = currentViewController
-                case 2:
-                    let currentViewController = DIContainer.shared.resolve(DayPhotosViewController.self)
-                    output.viewTransitionSubject.send((pastChildViewController,currentViewController))
-                    pastChildViewController = currentViewController
-                default:
-                    let currentViewController = DIContainer.shared.resolve(AllPhotosViewController.self)
-                    output.viewTransitionSubject.send((pastChildViewController,currentViewController))
-                    pastChildViewController = currentViewController
+                output.handleChildViewController.send(currentControlNumber)
+                currentControlNumber = selectedNumber
+            }
+            .store(in: &cancellables)
+        
+        input.tappedPhotoItem
+            .sink { [weak self] (assets, indexPath) in
+                guard let self else {
+                    return
                 }
+                
+                let photoViewModel = DIContainer.shared.resolve(PhotoViewModel.self)
+                photoViewModel.input.tappedPhotoItem.send((assets, indexPath))
+                output.handlePhotoItem.send(currentControlNumber)
+            }
+            .store(in: &cancellables)
+        
+        input.tappedCollectionItem
+            .sink { [weak self] date in
+                guard let self else {
+                    return
+                }
+                
+                output.handleCollectionItem.send(date)
+                output.handlePhotoItem.send(currentControlNumber)
+            }
+            .store(in: &cancellables)
+        
+        input.readyPhotos
+            .sink { [weak self] in
+                self?.output.handleIndicator.send()
             }
             .store(in: &cancellables)
     }

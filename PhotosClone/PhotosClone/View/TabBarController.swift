@@ -21,7 +21,7 @@ class TabBarController: UITabBarController {
     }
     
     private func setUpViewControllers() {
-        let locker = DIContainer.shared.resolve(LockerViewController.self)
+        let locker = UINavigationController(rootViewController: DIContainer.shared.resolve(LockerViewController.self))
         let forYou = ForYouViewController()
         let album = UINavigationController(rootViewController: AlbumViewController(viewModel: AlbumViewModel()))
         let search = SearchViewController()
@@ -42,22 +42,24 @@ class TabBarController: UITabBarController {
     }
     
     private func registerViewControllers() {
+        let photoViewModel = PhotoViewModel()
+        DIContainer.shared.register(PhotoViewModel.self, dependency: photoViewModel)
+        
         registerLockerViewControllers()
     }
     
     private func registerLockerViewControllers() {
-        let dateViewModel = DateViewModel()
-        let allPhotosViewController = AllPhotosViewController()
-        let dayPhotosViewController = DayPhotosViewController(viewModel: dateViewModel)
-        let monthPhotosViewController = MonthPhotosViewController(viewModel: dateViewModel)
-        let yearPhotosViewController = YearPhotosViewController(viewModel: dateViewModel)
+        let lockerViewModel = LockerViewModel()
+        let allPhotosViewController = AllPhotosViewController(viewModel: lockerViewModel)
+        let dayPhotosViewController = DayPhotosViewController(viewModel: lockerViewModel)
+        let monthPhotosViewController = MonthPhotosViewController(viewModel: lockerViewModel)
+        let yearPhotosViewController = YearPhotosViewController(viewModel: lockerViewModel)
         
         DIContainer.shared.register(AllPhotosViewController.self, dependency: allPhotosViewController)
         DIContainer.shared.register(DayPhotosViewController.self, dependency: dayPhotosViewController)
         DIContainer.shared.register(MonthPhotosViewController.self, dependency: monthPhotosViewController)
         DIContainer.shared.register(YearPhotosViewController.self, dependency: yearPhotosViewController)
         
-        let lockerViewModel = LockerViewModel()
         let lockerViewController = LockerViewController(viewModel: lockerViewModel)
         DIContainer.shared.register(LockerViewController.self, dependency: lockerViewController)
     }

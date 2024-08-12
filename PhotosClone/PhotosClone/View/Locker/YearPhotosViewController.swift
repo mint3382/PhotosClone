@@ -27,10 +27,10 @@ class YearPhotosViewController: UIViewController {
     private let imageManager = PHCachingImageManager()
     let dateFormatter = DateFormatter()
     
-    var viewModel: DateViewModel
+    var viewModel: LockerViewModel
     var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: DateViewModel) {
+    init(viewModel: LockerViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,7 +48,7 @@ class YearPhotosViewController: UIViewController {
     }
     
     private func bind() {
-        viewModel.output.removeIndicator
+        viewModel.output.handleIndicator
             .sink { [weak self] in
                 self?.loadingIndicatorView.removeFromSuperview()
             }
@@ -58,7 +58,7 @@ class YearPhotosViewController: UIViewController {
     private func categorizePhotosByDate() {
         var dayDateSet = Set<Date>()
         Task {
-            PhotoManager.shared.allPhotos.enumerateObjects { [weak self] (asset, _, _) in
+            PhotoManager.shared.allPhotos.forEach { [weak self] asset in
                 self?.dateFormatter.dateFormat = "yyyy년"
                 
                 guard let self, let creationDate = asset.creationDate else {
@@ -79,7 +79,7 @@ class YearPhotosViewController: UIViewController {
             await MainActor.run {
                 configureCollectionView()
                 scrollToBottom()
-                viewModel.input.fetchAllDailyPhotos.send()
+                viewModel.input.readyPhotos.send()
             }
         }
     }
@@ -237,4 +237,9 @@ class YearPhotosViewController: UIViewController {
     }
 }
 
-extension YearPhotosViewController: UICollectionViewDelegate { }
+extension YearPhotosViewController: UICollectionViewDelegate { 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let date = sortedDateSection[indexPath.section]
+        viewModel.input.tappedCollectionItem.send(date)
+    }
+}

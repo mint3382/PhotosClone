@@ -39,13 +39,12 @@ class DayPhotosViewController: UIViewController {
         return dateFormatter
     }()
     
-    private var allPhotos: PHFetchResult<PHAsset>?
     private let imageManager = PHCachingImageManager()
     
-    var viewModel: DateViewModel
+    var viewModel: LockerViewModel
     var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: DateViewModel) {
+    init(viewModel: LockerViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -58,26 +57,32 @@ class DayPhotosViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         configureIndicatorView()
-        
-        if allPhotos == nil {
-            allPhotos = PHAsset.fetchAssets(with: nil)
-            categorizePhotosByDate()
-        }
-        
+        categorizePhotosByDate()
         bind()
     }
     
     private func bind() {
-        viewModel.output.removeIndicator
+        viewModel.output.handleIndicator
             .sink { [weak self] in
                 self?.loadingIndicatorView.removeFromSuperview()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.handleCollectionItem
+            .sink { [weak self] date in
+                guard let self else { return }
+                
+                let day = dateFormatter.string(from: date)
+                if let section = sortedDateSection.firstIndex(of: day) {
+                    collectionView.scrollToItem(at: IndexPath(item: 0, section: section), at: .top, animated: false)
+                }
             }
             .store(in: &cancellables)
     }
     
     private func categorizePhotosByDate() {
         Task {
-            allPhotos?.enumerateObjects { (asset, _, _) in
+            PhotoManager.shared.allPhotos.forEach { asset in
                 if let creationDate = asset.creationDate {
                     let day = self.dateFormatter.string(from: creationDate)
                     self.dateSection.insert(day)
@@ -90,7 +95,7 @@ class DayPhotosViewController: UIViewController {
                 configureCollectionView()
                 configureSectionTitleLabel()
                 scrollToBottom()
-                viewModel.input.fetchAllDailyPhotos.send()
+                viewModel.input.readyPhotos.send()
             }
         }
     }
@@ -283,4 +288,11 @@ class DayPhotosViewController: UIViewController {
     }
 }
 
-extension DayPhotosViewController: UICollectionViewDelegate { }
+extension DayPhotosViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let date = sortedDateSection[indexPath.section]
+        if let assets = photosByDate[date] {
+            viewModel.input.tappedPhotoItem.send((assets, IndexPath(item: indexPath.item, section: 0)))
+        }
+    }
+}

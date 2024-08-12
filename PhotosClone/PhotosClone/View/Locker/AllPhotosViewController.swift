@@ -5,6 +5,7 @@
 //  Created by minsong kim on 8/8/24.
 //
 
+import Combine
 import UIKit
 import Photos
 
@@ -14,6 +15,18 @@ class AllPhotosViewController: UIViewController {
     
     private let imageManager = PHCachingImageManager()
     private var imageSize: CGSize = .zero
+    
+    var viewModel: LockerViewModel
+    var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: LockerViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,7 +112,7 @@ extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewD
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
             fatalError("Unexpected cell in collection view")
         }
-        let asset = PhotoManager.shared.allPhotos.object(at: indexPath.item)
+        let asset = PhotoManager.shared.allPhotos[indexPath.item]
         
         cell.representedAssetIdentifier = asset.localIdentifier
         imageManager.requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
@@ -109,5 +122,11 @@ extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewD
         })
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let assets = PhotoManager.shared.allPhotos
+        
+        viewModel.input.tappedPhotoItem.send((assets, indexPath))
     }
 }

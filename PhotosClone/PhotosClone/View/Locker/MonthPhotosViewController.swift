@@ -27,10 +27,10 @@ class MonthPhotosViewController: UIViewController {
     private let imageManager = PHCachingImageManager()
     let dateFormatter = DateFormatter()
     
-    var viewModel: DateViewModel
+    var viewModel: LockerViewModel
     var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: DateViewModel) {
+    init(viewModel: LockerViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,9 +48,24 @@ class MonthPhotosViewController: UIViewController {
     }
     
     private func bind() {
-        viewModel.output.removeIndicator
+        viewModel.output.handleIndicator
             .sink { [weak self] in
                 self?.loadingIndicatorView.removeFromSuperview()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.handleCollectionItem
+            .sink { [weak self] date in
+                guard let self else { return }
+                
+                dateFormatter.dateFormat = "yyyy년 MM월"
+                let stringDate = dateFormatter.string(from: date)
+                let year = dateFormatter.date(from: stringDate)
+                
+                if let year = dateFormatter.date(from: stringDate),
+                   let section = sortedDateSection.firstIndex(of: year) {
+                    collectionView.scrollToItem(at: IndexPath(item: 0, section: section), at: .top, animated: false)
+                }
             }
             .store(in: &cancellables)
     }
@@ -59,7 +74,7 @@ class MonthPhotosViewController: UIViewController {
         var dayDateSet = Set<Date>()
         Task {
             let allPhotos = PhotoManager.shared.allPhotos
-            allPhotos.enumerateObjects { [weak self] (asset, _, _) in
+            allPhotos.forEach { [weak self] asset in
                 self?.dateFormatter.dateFormat = "yyyy년 MM월"
                 
                 guard let self, let creationDate = asset.creationDate else {
@@ -89,7 +104,7 @@ class MonthPhotosViewController: UIViewController {
             await MainActor.run {
                 configureCollectionView()
                 scrollToBottom()
-                viewModel.input.fetchAllDailyPhotos.send()
+                viewModel.input.readyPhotos.send()
             }
         }
     }
@@ -257,4 +272,9 @@ class MonthPhotosViewController: UIViewController {
     }
 }
 
-extension MonthPhotosViewController: UICollectionViewDelegate { }
+extension MonthPhotosViewController: UICollectionViewDelegate { 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let date = sortedDateSection[indexPath.section]
+        viewModel.input.tappedCollectionItem.send(date)
+    }
+}

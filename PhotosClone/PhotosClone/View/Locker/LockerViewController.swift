@@ -24,6 +24,8 @@ class LockerViewController: UIViewController {
         return control
     }()
     
+    private var childViewController: UIViewController = DIContainer.shared.resolve(AllPhotosViewController.self)
+    
     var viewModel: LockerViewModel
     var cancellables = Set<AnyCancellable>()
     
@@ -39,10 +41,16 @@ class LockerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        self.navigationController?.navigationBar.topItem?.title = ""
 
         bind()
         configureTimePeriodSegmentControl()
         configureChildViewController(DIContainer.shared.resolve(AllPhotosViewController.self))
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
     }
     
     private func bind() {
@@ -56,15 +64,35 @@ class LockerViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.output.viewTransitionSubject
-            .sink { [weak self] childViewControllers in
-                guard let self else {
-                    return
-                }
+        viewModel.output.handleChildViewController
+            .sink { [weak self] pastControlNumber in
+                guard let self else { return }
+                childViewController.removeFromParent()
+                childViewController.view.removeFromSuperview()
                 
-                childViewControllers.past.removeFromParent()
-                childViewControllers.past.view.removeFromSuperview()
-                configureChildViewController(childViewControllers.current)
+                if timePeriodSegmentControl.selectedSegmentIndex == 0 {
+                    childViewController = DIContainer.shared.resolve(YearPhotosViewController.self)
+                } else if timePeriodSegmentControl.selectedSegmentIndex == 1 {
+                    childViewController = DIContainer.shared.resolve(MonthPhotosViewController.self)
+                } else if timePeriodSegmentControl.selectedSegmentIndex == 2 {
+                    childViewController = DIContainer.shared.resolve(DayPhotosViewController.self)
+                } else {
+                    childViewController = DIContainer.shared.resolve(AllPhotosViewController.self)
+                }
+                configureChildViewController(childViewController)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.handlePhotoItem
+            .sink { [weak self] controlNumber in
+                if controlNumber > 1 {
+                    let photoViewModel = DIContainer.shared.resolve(PhotoViewModel.self)
+                    let next = PhotoPageViewController(viewModel: photoViewModel)
+                    self?.navigationController?.pushViewController(next, animated: false)
+                } else {
+                    self?.timePeriodSegmentControl.selectedSegmentIndex = controlNumber + 1
+                    self?.viewModel.input.timePeriodSegmentControlSelected.send(controlNumber + 1)
+                }
             }
             .store(in: &cancellables)
     }
