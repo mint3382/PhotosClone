@@ -28,8 +28,9 @@ class PhotoCell: UICollectionViewCell, Identifiable {
         return imageView
     }()
     
-    func configureImage(image: UIImage?) {
+    func configureImage(image: UIImage?, contentMode: ContentMode = .scaleAspectFill) {
         imageView.image = image
+        imageView.contentMode = contentMode
         configureImageUI()
     }
     
