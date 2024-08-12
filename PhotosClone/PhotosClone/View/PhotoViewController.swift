@@ -38,13 +38,25 @@ class PhotoViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        collectionView.scrollToItem(at: viewModel.selectedIndex ?? IndexPath(item: 0, section: 0), at: .centeredHorizontally, animated: false)
+        collectionView.scrollToItem(at: viewModel.selectedIndex ?? IndexPath(item: 0, section: 0), at: .centeredVertically, animated: false)
     }
     
     func bind() {        
         viewModel.output.changeImage
             .sink { [weak self] indexPath in
                 self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.handleSelectItem
+            .sink { [weak self] isItemOnly in
+                if isItemOnly {
+                    self?.view.backgroundColor = .black
+                    self?.collectionView.backgroundColor = .black
+                } else {
+                    self?.view.backgroundColor = .white
+                    self?.collectionView.backgroundColor = .white
+                }
             }
             .store(in: &cancellables)
     }
@@ -63,10 +75,10 @@ class PhotoViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
     }
     
@@ -152,13 +164,7 @@ class PhotoViewController: UIViewController {
 
 extension PhotoViewController: UICollectionViewDelegate { 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.input.tappedInsidePhoto.send(indexPath)
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
-        if visibleIndexPaths.isEmpty == false {
-//            viewModel.input.
-        }
+//        viewModel.input.tappedInsidePhoto.send(indexPath)
+        viewModel.input.selectedItem.send()
     }
 }

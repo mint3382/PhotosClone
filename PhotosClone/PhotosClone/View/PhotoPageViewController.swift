@@ -10,6 +10,24 @@ import UIKit
 import Photos
 
 class PhotoPageViewController: UIViewController {
+    private let toolbar: UIToolbar = {
+        let bar = UIToolbar()
+        let appearance = UIToolbarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        bar.standardAppearance = appearance
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: PhotoPageViewController.self, action: nil)
+        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: PhotoPageViewController.self, action: nil)
+        let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: PhotoPageViewController.self, action: nil)
+        let barItems = [shareButton, flexibleSpace, heartButton, flexibleSpace, trashButton]
+        
+        bar.setItems(barItems, animated: true)
+        
+        return bar
+    }()
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Int, PHAsset>?
     
@@ -32,7 +50,9 @@ class PhotoPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        self.additionalSafeAreaInsets.top = -(self.navigationController?.navigationBar.frame.height ?? 0)
 
+        setupToolBar()
         configureCollectionView()
         configureChildViewController(childViewController)
         bind()
@@ -73,6 +93,30 @@ class PhotoPageViewController: UIViewController {
                 self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
             }
             .store(in: &cancellables)
+        
+        viewModel.output.handleSelectItem
+            .sink { [weak self] isItemOnly in
+                if isItemOnly {
+                    self?.toolbar.removeFromSuperview()
+                    self?.collectionView.removeFromSuperview()
+                    self?.navigationController?.navigationBar.isHidden = true
+                } else {
+                    self?.setupToolBar()
+                    self?.configureCollectionViewUI()
+                    self?.navigationController?.navigationBar.isHidden = false
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupToolBar() {
+        view.addSubview(toolbar)
+        
+        NSLayoutConstraint.activate([
+            toolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
     }
     
     private func setupTitleView(largeText: String, smallText: String) {
@@ -127,7 +171,7 @@ class PhotoPageViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: toolbar.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.heightAnchor.constraint(equalToConstant: 50)

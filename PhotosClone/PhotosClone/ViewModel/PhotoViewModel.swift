@@ -12,6 +12,7 @@ import Photos
 class PhotoViewModel {
     struct Input {
         let tappedPhotoItem = PassthroughSubject<(assets:[PHAsset], indexPath: IndexPath), Never>()
+        let selectedItem = PassthroughSubject<Void, Never>()
         let tappedInsidePhoto = PassthroughSubject<IndexPath, Never>()
         let changeDisplayItem = PassthroughSubject<(title: String, subTitle: String), Never>()
         let changeItemScroll = PassthroughSubject<IndexPath, Never>()
@@ -21,6 +22,7 @@ class PhotoViewModel {
         let changeImage = PassthroughSubject<IndexPath, Never>()
         let changeTitle = PassthroughSubject<(title: String, subTitle: String), Never>()
         let changeScroll = PassthroughSubject<IndexPath, Never>()
+        let handleSelectItem = PassthroughSubject<Bool, Never>()
     }
     
     private var cancellables = Set<AnyCancellable>()
@@ -28,6 +30,7 @@ class PhotoViewModel {
     let output: Output
     var assets: [PHAsset] = []
     var selectedIndex: IndexPath? = nil
+    var isItemOnly: Bool = false
     
     init() {
         self.input = Input()
@@ -61,8 +64,13 @@ class PhotoViewModel {
                 self?.output.changeScroll.send(indexPath)
             }
             .store(in: &cancellables)
+        
+        input.selectedItem
+            .sink { [weak self] in
+                guard let self else { return }
+                isItemOnly.toggle()
+                output.handleSelectItem.send(isItemOnly)
+            }
+            .store(in: &cancellables)
     }
 }
-
-
-
