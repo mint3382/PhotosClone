@@ -13,11 +13,17 @@ class PhotoManager {
     
     private init() { }
     
-    var allPhotos = PHFetchResult<PHAsset>()
+    var allPhotos = [PHAsset]()
     var userCollections = PHFetchResult<PHCollection>()
     
     func fetchPhotos(with options: PHFetchOptions?) {
-        allPhotos = PHAsset.fetchAssets(with: options)
+        PHAsset.fetchAssets(with: options).enumerateObjects { (asset, index, stop) in
+            self.allPhotos.append(asset)
+        }
+    }
+    
+    func categorizeForYouMemory(section: ForYouSection) {
+        let persons = PHCollectionList.fetchMomentLists(with: .smartFolderFaces, options: nil)
     }
     
     func categorizeAlbums(section: AlbumSection) -> [PHCollection] {
@@ -30,9 +36,8 @@ class PhotoManager {
             let userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
             albums += (0..<userCollections.count).map { userCollections.object(at: $0) }
         case .personAndPlace:
-            for item in section.items {
-                albums.append(item.collection)
-            }
+            let persons = PHCollectionList.fetchMomentLists(with: .smartFolderFaces, options: nil)
+            albums += (0..<persons.count).map { persons.object(at: $0) }
         case .mediaType:
             for item in section.items {
                 albums.append(item.collection)

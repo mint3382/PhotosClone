@@ -31,6 +31,9 @@
 		924BC6652C6880AA009E5463 /* AlbumItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6642C6880AA009E5463 /* AlbumItem.swift */; };
 		924BC6672C68883E009E5463 /* PhotosInAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6662C68883E009E5463 /* PhotosInAlbumViewController.swift */; };
 		924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6682C68888A009E5463 /* AlbumViewModel.swift */; };
+		924BC66D2C69C5FD009E5463 /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC66C2C69C5FD009E5463 /* PhotoViewController.swift */; };
+		924BC66F2C69CB5A009E5463 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC66E2C69CB5A009E5463 /* PhotoViewModel.swift */; };
+		924BC6712C6A5517009E5463 /* PhotoPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924BC6702C6A5517009E5463 /* PhotoPageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +63,9 @@
 		924BC6642C6880AA009E5463 /* AlbumItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumItem.swift; sourceTree = "<group>"; };
 		924BC6662C68883E009E5463 /* PhotosInAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosInAlbumViewController.swift; sourceTree = "<group>"; };
 		924BC6682C68888A009E5463 /* AlbumViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumViewModel.swift; sourceTree = "<group>"; };
+		924BC66C2C69C5FD009E5463 /* PhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
+		924BC66E2C69CB5A009E5463 /* PhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewModel.swift; sourceTree = "<group>"; };
+		924BC6702C6A5517009E5463 /* PhotoPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,8 @@
 			isa = PBXGroup;
 			children = (
 				924BC6382C6452F4009E5463 /* TabBarController.swift */,
+				924BC66C2C69C5FD009E5463 /* PhotoViewController.swift */,
+				924BC6702C6A5517009E5463 /* PhotoPageViewController.swift */,
 				924BC6442C64E416009E5463 /* Locker */,
 				924BC66A2C69110A009E5463 /* ForYou */,
 				924BC6602C688059009E5463 /* Album */,
@@ -142,6 +150,7 @@
 		924BC64E2C64E825009E5463 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				924BC66E2C69CB5A009E5463 /* PhotoViewModel.swift */,
 				924BC64F2C64E846009E5463 /* LockerViewModel.swift */,
 				924BC6682C68888A009E5463 /* AlbumViewModel.swift */,
 			);
@@ -267,8 +276,11 @@
 				924BC6462C64E466009E5463 /* AllPhotosViewController.swift in Sources */,
 				924BC63D2C645419009E5463 /* AlbumViewController.swift in Sources */,
 				924BC6572C64FBF4009E5463 /* UIControl+.swift in Sources */,
+				924BC66F2C69CB5A009E5463 /* PhotoViewModel.swift in Sources */,
 				924BC6692C68888A009E5463 /* AlbumViewModel.swift in Sources */,
+				924BC66D2C69C5FD009E5463 /* PhotoViewController.swift in Sources */,
 				924BC63F2C64542B009E5463 /* SearchViewController.swift in Sources */,
+				924BC6712C6A5517009E5463 /* PhotoPageViewController.swift in Sources */,
 				924BC6292C634000009E5463 /* LockerViewController.swift in Sources */,
 				924BC6672C68883E009E5463 /* PhotosInAlbumViewController.swift in Sources */,
 				924BC65B2C661081009E5463 /* HeaderView.swift in Sources */,
