@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AlbumSection: Int, Hashable, CaseIterable, CustomStringConvertible {
+enum AlbumSection: Int, Hashable, CaseIterable {
     case myAlbum
     case personAndPlace
     case mediaType

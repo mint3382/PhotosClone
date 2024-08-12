@@ -93,21 +93,21 @@ class AlbumViewController: UIViewController {
     private func createAlbumSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.48),heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+        item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4)
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),heightDimension: .fractionalHeight(0.35))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,subitems: [item])
 
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                 heightDimension: .estimated(30))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: headerSize,
             elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        sectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
+        sectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         section.boundarySupplementaryItems = [sectionHeader]
         
         return section
@@ -183,13 +183,28 @@ class AlbumViewController: UIViewController {
                 } else if section == .personAndPlace {
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: AlbumCell.identifier,
-                        for: indexPath) as? AlbumCell,
-                          let collection = collection as? AlbumItem else {
+                        for: indexPath) as? AlbumCell else {
                         return UICollectionViewCell()
                     }
                     
-                    cell.configureImage(image: UIImage(systemName: "folder.circle.fill"))
-                    cell.configureTitle(collection.title)
+                    if let collection = collection as? PHAssetCollection {
+                        let asset = PhotoManager.shared.fetchAssetsFromCollection(collection)
+                        
+                        if asset.count > 0 {
+                            PhotoManager.shared.getImageFromAsset(asset[0]) { image in
+                                cell.configureImage(image: image)
+                                cell.configureTitle(collection.localizedTitle)
+                                cell.configureCount("\(asset.count)")
+                            }
+                        } else {
+                            cell.configureImage(image: UIImage(resource: .no))
+                            cell.configureTitle(collection.localizedTitle)
+                            cell.configureCount("0")
+                        }
+                    } else {
+                        cell.configureImage(image: .no)
+                        cell.configureTitle("ERROR")
+                    }
                     
                     return cell
                 } else {
@@ -214,7 +229,7 @@ class AlbumViewController: UIViewController {
         snapshot.appendSections([.myAlbum, .personAndPlace, .mediaType, .etc])
         
         let myAlbums = PhotoManager.shared.categorizeAlbums(section: .myAlbum)
-        let personAndOthers = AlbumSection.personAndPlace.items
+        let personAndOthers = PhotoManager.shared.categorizeAlbums(section: .personAndPlace)
         let mediaTypes = AlbumSection.mediaType.items
         let etc = AlbumSection.etc.items
         
@@ -239,7 +254,9 @@ extension AlbumViewController: UICollectionViewDelegate {
                 viewModel.input.tappedAlbumItem.send((collection.localizedTitle ?? "", collection))
             }
         case .personAndPlace:
-            print("personAndPlace")
+            if let collection = PhotoManager.shared.categorizeAlbums(section: section ?? .personAndPlace)[indexPath.item] as? PHAssetCollection {
+                viewModel.input.tappedAlbumItem.send((collection.localizedTitle ?? "", collection))
+            }
         case .mediaType:
             let album = section?.items[indexPath.item] ?? .video
             viewModel.input.tappedAlbumItem.send((album.title, album.collection))
