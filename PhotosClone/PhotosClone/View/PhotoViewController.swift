@@ -14,6 +14,7 @@ class PhotoViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Int, PHAsset>?
     
     private let imageManager = PHCachingImageManager()
+    private let dateFormatter = DateFormatter()
     
     var viewModel: PhotoViewModel
     var cancellables = Set<AnyCancellable>()
@@ -104,7 +105,7 @@ class PhotoViewController: UIViewController {
     private func setDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Int, PHAsset>(
             collectionView: collectionView,
-            cellProvider: { collectionView, indexPath, asset in
+            cellProvider: { [self] collectionView, indexPath, asset in
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: PhotoCell.identifier,
                     for: indexPath) as? PhotoCell else {
@@ -114,6 +115,25 @@ class PhotoViewController: UIViewController {
                 let size = CGSize(width: cell.intrinsicContentSize.width, height: cell.intrinsicContentSize.height)
                 PhotoManager.shared.getImageFromAsset(asset, targetSize: size) { image in
                     cell.configureImage(image: image, contentMode: .scaleAspectFit)
+                }
+                dateFormatter.dateFormat = "yyyy년 MM월 dd일"
+                dateFormatter.locale = Locale(identifier: "ko_KR")
+                var title = ""
+                let today = dateFormatter.string(from: Date())
+                let yesterday = dateFormatter.string(from: Date().addingTimeInterval(3600 * -24))
+                if let date = asset.creationDate {
+                    title = dateFormatter.string(from: date)
+                    
+                    if title == today {
+                        title = "오늘"
+                    } else if title == yesterday {
+                        title = "어제"
+                    }
+                    
+                    dateFormatter.dateFormat = "a hh:mm"
+                    let subtitle = dateFormatter.string(from: date)
+                    viewModel.input.changeDisplayItem.send((title, subtitle))
+                    viewModel.input.changeItemScroll.send(indexPath)
                 }
                 
                 return cell
@@ -133,5 +153,12 @@ class PhotoViewController: UIViewController {
 extension PhotoViewController: UICollectionViewDelegate { 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.input.tappedInsidePhoto.send(indexPath)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems
+        if visibleIndexPaths.isEmpty == false {
+//            viewModel.input.
+        }
     }
 }

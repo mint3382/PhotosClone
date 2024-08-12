@@ -35,12 +35,13 @@ class PhotoPageViewController: UIViewController {
 
         configureCollectionView()
         configureChildViewController(childViewController)
-//        bind()
+        bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.tintColor = .systemBlue
         self.tabBarController?.tabBar.isHidden = true
     }
     
@@ -57,9 +58,46 @@ class PhotoPageViewController: UIViewController {
     func bind() {
         viewModel.output.changeImage
             .sink { [weak self] indexPath in
-                self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+                self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
             }
             .store(in: &cancellables)
+        
+        viewModel.output.changeTitle
+            .sink { [weak self] text in
+                self?.setupTitleView(largeText: text.title, smallText: text.subTitle)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.changeScroll
+            .sink { [weak self] indexPath in
+                self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupTitleView(largeText: String, smallText: String) {
+        let titleParameters = [NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .subheadline)]
+        let subtitleParameters = [NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption1)]
+
+        let title:NSMutableAttributedString = NSMutableAttributedString(string: largeText, attributes: titleParameters)
+        let subtitle:NSAttributedString = NSAttributedString(string: smallText, attributes: subtitleParameters)
+
+        title.append(NSAttributedString(string: "\n"))
+        title.append(subtitle)
+
+        let size = title.size()
+
+        let width = size.width
+        guard let height = navigationController?.navigationBar.frame.size.height else {
+            return
+        }
+
+        let titleLabel = UILabel(frame: CGRectMake(0,0, width, height))
+        titleLabel.attributedText = title
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+
+        navigationItem.titleView = titleLabel
     }
     
     private func configureChildViewController(_ childViewController: UIViewController) {
