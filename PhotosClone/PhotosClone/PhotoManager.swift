@@ -13,11 +13,14 @@ class PhotoManager {
     
     private init() { }
     
+    var allAssets = PHFetchResult<PHAsset>()
     var allPhotos = [PHAsset]()
     var userCollections = PHFetchResult<PHCollection>()
     
     func fetchPhotos(with options: PHFetchOptions?) {
-        PHAsset.fetchAssets(with: options).enumerateObjects { (asset, index, stop) in
+        allAssets = PHAsset.fetchAssets(with: options)
+        
+        allAssets.enumerateObjects { (asset, index, stop) in
             self.allPhotos.append(asset)
         }
     }

@@ -38,6 +38,12 @@ class AllPhotosViewController: UIViewController {
         
         configureCollectionView()
         configureCollectionViewUI()
+        
+        PHPhotoLibrary.shared().register(self)
+    }
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -128,5 +134,32 @@ extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewD
         let assets = PhotoManager.shared.allPhotos
         
         viewModel.input.tappedPhotoItem.send((assets, indexPath))
+    }
+}
+
+extension AllPhotosViewController: PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let changes = changeInstance.changeDetails(for: PhotoManager.shared.allAssets) else { return }
+            
+            PhotoManager.shared.allPhotos = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
+            
+            // CollectionView 업데이트
+            self.collectionView.performBatchUpdates({
+                if changes.hasIncrementalChanges {
+                    if let removed = changes.removedIndexes, !removed.isEmpty {
+                        self.collectionView.deleteItems(at: removed.map { IndexPath(item: $0, section: 0) })
+                    }
+                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                        self.collectionView.insertItems(at: inserted.map { IndexPath(item: $0, section: 0) })
+                    }
+                } else {
+                    self.collectionView.reloadData()
+                }
+            }, completion: { _ in
+                self.scrollToBottom() // 새로운 사진이 추가되면 스크롤을 아래로 이동
+            })
+        }
     }
 }
