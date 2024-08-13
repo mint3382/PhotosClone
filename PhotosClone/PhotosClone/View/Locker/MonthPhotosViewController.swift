@@ -47,10 +47,10 @@ class MonthPhotosViewController: UIViewController {
         bind()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        scrollToBottom()
-    }
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        scrollToBottom()
+//    }
     
     private func bind() {
         viewModel.output.handleIndicator
@@ -108,6 +108,7 @@ class MonthPhotosViewController: UIViewController {
             
             await MainActor.run {
                 configureCollectionView()
+                scrollToBottom()
                 viewModel.input.readyPhotos.send()
             }
         }

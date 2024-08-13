@@ -38,6 +38,7 @@ class DayPhotosViewController: UIViewController {
         
         return dateFormatter
     }()
+    private var isFirstView: Bool = true
     
     private let imageManager = PHCachingImageManager()
     
@@ -65,11 +66,6 @@ class DayPhotosViewController: UIViewController {
     
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        scrollToBottom()
     }
     
     private func bind() {
@@ -103,9 +99,15 @@ class DayPhotosViewController: UIViewController {
             sortedDateSection = Array(dateSection).sorted()
             
             await MainActor.run {
-                configureCollectionView()
-                configureSectionTitleLabel()
-                viewModel.input.readyPhotos.send()
+                if isFirstView {
+                    configureCollectionView()
+                    configureSectionTitleLabel()
+                    scrollToBottom()
+                    viewModel.input.readyPhotos.send()
+                    isFirstView = false
+                } else {
+                    collectionView.reloadData()
+                }
             }
         }
     }
@@ -291,8 +293,12 @@ class DayPhotosViewController: UIViewController {
         snapshot.appendSections(sortedDateSection)
         
         for (date, dayAssets) in photosByDate {
-            snapshot.appendItems(dayAssets, toSection: date)
+            let uniqueAssets = Set(dayAssets.map { $0.localIdentifier }).map { id in
+                dayAssets.first { $0.localIdentifier == id }!
+            }
+            snapshot.appendItems(uniqueAssets, toSection: date)
         }
+            
         
         dataSource?.apply(snapshot)
     }
@@ -313,7 +319,7 @@ extension DayPhotosViewController: PHPhotoLibraryChangeObserver {
             guard let self = self else { return }
             guard let changes = changeInstance.changeDetails(for: PhotoManager.shared.allAssets) else { return }
             
-            PhotoManager.shared.allPhotos = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
+            let changeAssets = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
             
             var snapshot = dataSource?.snapshot()
             
@@ -324,18 +330,21 @@ extension DayPhotosViewController: PHPhotoLibraryChangeObserver {
                 }
                 
                 if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                    let assets = inserted.map { PhotoManager.shared.allPhotos[$0] }
-                    let dates = assets.compactMap { $0.creationDate }.map { self.dateFormatter.string(from: $0) }
-                    for (index, asset) in assets.enumerated() {
+                    let assets = inserted.map { changeAssets[$0] }
+                    let uniqueAssets = Set(assets.map { $0.localIdentifier }).map { id in
+                        assets.first { $0.localIdentifier == id }!
+                    }
+                    let dates = uniqueAssets.compactMap { $0.creationDate }.map { self.dateFormatter.string(from: $0) }
+                    for (index, asset) in uniqueAssets.enumerated() {
                         snapshot?.appendItems([asset], toSection: dates[index])
                     }
                 }
-                
-                self.dataSource?.apply(snapshot!)
+                PhotoManager.shared.allPhotos = changeAssets
+                dataSource?.apply(snapshot!)
+                categorizePhotosByDate()
             } else {
                 self.setSnapshot()
             }
-            
         }
     }
 }

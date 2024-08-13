@@ -167,7 +167,7 @@ extension AllPhotosViewController: PHPhotoLibraryChangeObserver {
                     snapshot.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0] })
                 }
                 if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                    snapshot.appendItems(inserted.map { PhotoManager.shared.allPhotos[$0] })
+                    snapshot.appendItems(inserted.map { changeAssets[$0] })
                 }
                 PhotoManager.shared.allPhotos = changeAssets
                 self.dataSource?.apply(snapshot)
