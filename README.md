@@ -22,7 +22,21 @@
 <a id="기술-스택"></a>
 
 ## 🛠️ 기술 스택
-`UIKit`, `MVVM`, `Combine`, `Swift Concurrency`
+`UIKit`
+- 성능 최적화: 오랜 기간 사용되어 온 만큼 SwiftUI보다 더 안정적인 성능 최적화
+
+`MVVM`
+- 재사용성: 서로 다른 View가 같은 ViewModel을 공유함으로서 코드 중복 줄임
+- 책임의 명확성: Model, View, ViewModel의 역할 분리
+- 데이터 바인딩: ViewModel의 상태 변화에 따라 View 업데이트
+
+`Combine`
+- 데이터 스트림 관리: MVVM에서 필요한 데이터 바인딩을 간단하게 표현 가능
+- 반응형: MVVM과 연계하여 데이터 상태에 따라 자동으로 UI 업데이트
+
+`Swift Concurrency`
+- 성능 향상: 필요한 경우에만 스레드 생성, 시스템 리소스 효율적으로 사용
+- 가독성: async, await 키워드를 통해 동기 코드처럼 비동기 코드 작성
 
 </br>
 
@@ -33,7 +47,7 @@
 
 | 모든 사진 화면 | 모든 사진 화면 스크롤 | 사진 클릭시 |
 |:--------:|:--------:|:--------:|
-|<img src="https://velog.velcdn.com/images/mintsong/post/a3f7bee5-18c9-473b-93e0-8ad1a7e9e91b/image.png" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/576c5f3b-02a8-4e67-9d97-2bbb495438d2/image.gif" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/f9a12184-e93b-4765-8a7f-6e6faba9a3f5/image.gif" alt="diary_scroll" width="300">|
+|<img src="https://velog.velcdn.com/images/mintsong/post/065c7ef8-0024-4394-b4a7-8e348d98a019/image.jpeg" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/576c5f3b-02a8-4e67-9d97-2bbb495438d2/image.gif" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/f9a12184-e93b-4765-8a7f-6e6faba9a3f5/image.gif" alt="diary_scroll" width="300">|
 
 | 모든 사진에서 사진 추가 | 사진 삭제 후 모든 사진 되돌아 갔을 때 | 
 |:--------:|:--------:|
@@ -57,7 +71,7 @@
 
 | 앨범 카테고리 화면 | 개수가 많은 앨범 화면 | 개수가 적은 앨범 화면 |
 |:--------:|:--------:|:--------:|
-|<img src="https://velog.velcdn.com/images/mintsong/post/091e0db8-648e-41ba-895c-331a8ab6ba7a/image.gif" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/6fd237cc-0d5c-4616-985b-95c4365773f9/image.png" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/a1442e1d-495e-44ed-9477-0ea620eba2ef/image.png" alt="diary_scroll" width="300">|
+|<img src="https://velog.velcdn.com/images/mintsong/post/091e0db8-648e-41ba-895c-331a8ab6ba7a/image.gif" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/0fc6d862-4414-4921-b70d-8f04424a7355/image.jpeg" alt="diary_scroll" width="300">|<img src="https://velog.velcdn.com/images/mintsong/post/a1442e1d-495e-44ed-9477-0ea620eba2ef/image.png" alt="diary_scroll" width="300">|
 
 | 앨범 카테고리 클릭시 (사진 많을 때) | 앨범 카테고리 클릭시 (사진 적을 때) | 앨범에서 사진 클릭시 |
 |:--------:|:--------:|:--------:|
