@@ -47,11 +47,6 @@ class YearPhotosViewController: UIViewController {
         bind()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        scrollToBottom()
-    }
-    
     private func bind() {
         viewModel.output.handleIndicator
             .sink { [weak self] in
@@ -82,6 +77,7 @@ class YearPhotosViewController: UIViewController {
             
             await MainActor.run {
                 configureCollectionView()
+                scrollToBottom()
                 viewModel.input.readyPhotos.send()
             }
         }

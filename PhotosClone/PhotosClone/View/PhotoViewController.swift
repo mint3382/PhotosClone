@@ -59,6 +59,19 @@ class PhotoViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.output.handlePage
+            .sink { [weak self] data in
+                guard let self else { return }
+                if data.hasImage {
+                    var snapshot = dataSource?.snapshot()
+                    snapshot?.deleteItems([data.deletedAsset])
+                    dataSource?.apply(snapshot ?? NSDiffableDataSourceSnapshot())
+                } else {
+                    navigationController?.popViewController(animated: true)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     //컬렉션뷰 설정

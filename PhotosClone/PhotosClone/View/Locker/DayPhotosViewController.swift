@@ -309,7 +309,7 @@ extension DayPhotosViewController: UICollectionViewDelegate {
 
 extension DayPhotosViewController: PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange) {
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self]  in
             guard let self = self else { return }
             guard let changes = changeInstance.changeDetails(for: PhotoManager.shared.allAssets) else { return }
             
@@ -318,25 +318,24 @@ extension DayPhotosViewController: PHPhotoLibraryChangeObserver {
             var snapshot = dataSource?.snapshot()
             
             // CollectionView 업데이트
-            self.collectionView.performBatchUpdates({
-                if changes.hasIncrementalChanges {
-                    if let removed = changes.removedIndexes, !removed.isEmpty {
-                        snapshot?.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0]})
-                    }
-                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                        let assets = inserted.map { PhotoManager.shared.allPhotos[$0] }
-                        let dates = assets.compactMap { $0.creationDate }.map { self.dateFormatter.string(from: $0) }
-                        for (index, asset) in assets.enumerated() {
-                            snapshot?.appendItems([asset], toSection: dates[index])
-                        }
-                    }
-                    self.dataSource?.apply(snapshot!)
-                } else {
-                    self.collectionView.reloadData()
+            if changes.hasIncrementalChanges {
+                if let removed = changes.removedIndexes, !removed.isEmpty {
+                    snapshot?.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0]})
                 }
-            }, completion: { _ in
-                self.scrollToBottom() // 새로운 사진이 추가되면 스크롤을 아래로 이동
-            })
+                
+                if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                    let assets = inserted.map { PhotoManager.shared.allPhotos[$0] }
+                    let dates = assets.compactMap { $0.creationDate }.map { self.dateFormatter.string(from: $0) }
+                    for (index, asset) in assets.enumerated() {
+                        snapshot?.appendItems([asset], toSection: dates[index])
+                    }
+                }
+                
+                self.dataSource?.apply(snapshot!)
+            } else {
+                self.setSnapshot()
+            }
+            
         }
     }
 }

@@ -19,9 +19,9 @@ class PhotoPageViewController: UIViewController {
         bar.translatesAutoresizingMaskIntoConstraints = false
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: PhotoPageViewController.self, action: nil)
-        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: PhotoPageViewController.self, action: nil)
-        let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: PhotoPageViewController.self, action: nil)
+        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: nil)
+        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: nil)
+        let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(tappedDeleteButton))
         let barItems = [shareButton, flexibleSpace, heartButton, flexibleSpace, trashButton]
         
         bar.setItems(barItems, animated: true)
@@ -75,6 +75,19 @@ class PhotoPageViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = false
     }
     
+    @objc func tappedDeleteButton() {
+        PHPhotoLibrary.shared().performChanges ({
+            PHAssetChangeRequest.deleteAssets([PhotoManager.shared.allPhotos[self.viewModel.selectedIndex?.item ?? 0]] as NSArray)
+        }, completionHandler: { success, error in
+            if success {
+                print("===success===")
+                Task { @MainActor in
+                    self.viewModel.input.deleteItem.send()
+                }
+            }
+        })
+    }
+    
     func bind() {
         viewModel.output.changeImage
             .sink { [weak self] indexPath in
@@ -105,6 +118,15 @@ class PhotoPageViewController: UIViewController {
                     self?.configureCollectionViewUI()
                     self?.navigationController?.navigationBar.isHidden = false
                 }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.output.handlePage
+            .sink { [weak self] data in
+                guard let self else { return }
+                var snapshot = dataSource?.snapshot() ?? NSDiffableDataSourceSnapshot()
+                snapshot.deleteItems([data.deletedAsset])
+                self.dataSource?.apply(snapshot)
             }
             .store(in: &cancellables)
     }

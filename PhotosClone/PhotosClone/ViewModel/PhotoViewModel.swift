@@ -16,6 +16,7 @@ class PhotoViewModel {
         let tappedInsidePhoto = PassthroughSubject<IndexPath, Never>()
         let changeDisplayItem = PassthroughSubject<(title: String, subTitle: String), Never>()
         let changeItemScroll = PassthroughSubject<IndexPath, Never>()
+        let deleteItem = PassthroughSubject<Void, Never>()
     }
     
     struct Output {
@@ -23,6 +24,7 @@ class PhotoViewModel {
         let changeTitle = PassthroughSubject<(title: String, subTitle: String), Never>()
         let changeScroll = PassthroughSubject<IndexPath, Never>()
         let handleSelectItem = PassthroughSubject<Bool, Never>()
+        let handlePage = PassthroughSubject<(hasImage: Bool, deletedAsset: PHAsset), Never>()
     }
     
     private var cancellables = Set<AnyCancellable>()
@@ -70,6 +72,22 @@ class PhotoViewModel {
                 guard let self else { return }
                 isItemOnly.toggle()
                 output.handleSelectItem.send(isItemOnly)
+            }
+            .store(in: &cancellables)
+        
+        input.deleteItem
+            .sink { [weak self] in
+                guard let self, let selectedIndex else { return }
+                if assets.count == 1 {
+                    output.handlePage.send((false, assets[0]))
+                } else if selectedIndex.item == assets.count - 1 {
+                    let deletedAsset = self.assets.removeLast()
+                    self.selectedIndex?.item -= 1
+                    output.handlePage.send((true, deletedAsset))
+                } else {
+                    let deletedAsset = assets.remove(at: selectedIndex.item)
+                    output.handlePage.send((true, deletedAsset))
+                }
             }
             .store(in: &cancellables)
     }

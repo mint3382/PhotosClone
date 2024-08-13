@@ -12,6 +12,8 @@ import Photos
 class AllPhotosViewController: UIViewController {
     private lazy var flowLayout = self.createFlowLayout()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.flowLayout)
+    private var dataSource: UICollectionViewDiffableDataSource<Int, PHAsset>?
+    private var isFirstView: Bool = true
     
     private let imageManager = PHCachingImageManager()
     private var imageSize: CGSize = .zero
@@ -57,7 +59,12 @@ class AllPhotosViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        scrollToBottom()
+        if isFirstView {
+            scrollToBottom()
+            isFirstView = false
+        } else {
+            collectionView.reloadData()
+        }
     }
     
     private func scrollToBottom() {
@@ -69,10 +76,12 @@ class AllPhotosViewController: UIViewController {
         let lastItemIndex = fetchAsset.count - 1
         let lastIndexPath = IndexPath(item: lastItemIndex, section: 0)
         
-        collectionView.scrollToItem(at: lastIndexPath, at: .bottom, animated: false)
-        
-        let additionalScrollHeight: CGFloat = 50.0
-        collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentOffset.y + additionalScrollHeight)
+        let snapshot = dataSource?.snapshot() ?? NSDiffableDataSourceSnapshot<Int, PHAsset>()
+        if snapshot.itemIdentifiers.contains(where: { $0.localIdentifier == fetchAsset[lastItemIndex].localIdentifier }) {
+            collectionView.scrollToItem(at: lastIndexPath, at: .bottom, animated: false)
+            let additionalScrollHeight: CGFloat = 50.0
+            collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentOffset.y + additionalScrollHeight)
+        }
     }
     
     //컬렉션뷰 위치 잡기
@@ -91,8 +100,10 @@ class AllPhotosViewController: UIViewController {
     //컬렉션뷰 등록하기
     private func configureCollectionView() {
         collectionView.delegate = self
-        collectionView.dataSource = self
         collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
+        
+        setDataSource()
+        setSnapshot()
     }
     
     private func createFlowLayout() -> UICollectionViewFlowLayout {
@@ -106,30 +117,34 @@ class AllPhotosViewController: UIViewController {
         
         return layout
     }
+    
+    private func setDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Int, PHAsset>(collectionView: collectionView) { collectionView, indexPath, asset in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
+                return UICollectionViewCell()
+            }
+            
+            cell.representedAssetIdentifier = asset.localIdentifier
+            
+            self.imageManager.requestImage(for: asset, targetSize: self.imageSize, contentMode: .aspectFill, options: nil) { image, _ in
+                if cell.representedAssetIdentifier == asset.localIdentifier {
+                    cell.configureImage(image: image)
+                }
+            }
+            return cell
+        }
+    }
+    
+    private func setSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, PHAsset>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(PhotoManager.shared.allPhotos)
+        
+        dataSource?.apply(snapshot, animatingDifferences: false)
+    }
 }
 
-extension AllPhotosViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
-        return PhotoManager.shared.allPhotos.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as? PhotoCell else {
-            return UICollectionViewCell()
-        }
-        let asset = PhotoManager.shared.allPhotos[indexPath.item]
-        
-        cell.representedAssetIdentifier = asset.localIdentifier
-        imageManager.requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
-            if cell.representedAssetIdentifier == asset.localIdentifier {
-                cell.configureImage(image: image)
-            }
-        })
-        
-        return cell
-    }
-    
+extension AllPhotosViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let assets = PhotoManager.shared.allPhotos
         
@@ -143,23 +158,22 @@ extension AllPhotosViewController: PHPhotoLibraryChangeObserver {
             guard let self = self else { return }
             guard let changes = changeInstance.changeDetails(for: PhotoManager.shared.allAssets) else { return }
             
-            PhotoManager.shared.allPhotos = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
+            let changeAssets = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
+            var snapshot = self.dataSource?.snapshot() ?? NSDiffableDataSourceSnapshot<Int, PHAsset>()
             
             // CollectionView 업데이트
-            self.collectionView.performBatchUpdates({
-                if changes.hasIncrementalChanges {
-                    if let removed = changes.removedIndexes, !removed.isEmpty {
-                        self.collectionView.deleteItems(at: removed.map { IndexPath(item: $0, section: 0) })
-                    }
-                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
-                        self.collectionView.insertItems(at: inserted.map { IndexPath(item: $0, section: 0) })
-                    }
-                } else {
-                    self.collectionView.reloadData()
+            if changes.hasIncrementalChanges {
+                if let removed = changes.removedIndexes, !removed.isEmpty {
+                    snapshot.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0] })
                 }
-            }, completion: { _ in
-                self.scrollToBottom() // 새로운 사진이 추가되면 스크롤을 아래로 이동
-            })
+                if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                    snapshot.appendItems(inserted.map { PhotoManager.shared.allPhotos[$0] })
+                }
+                PhotoManager.shared.allPhotos = changeAssets
+                self.dataSource?.apply(snapshot)
+            } else {
+                self.setSnapshot()
+            }
         }
     }
 }
