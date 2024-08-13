@@ -38,7 +38,7 @@ class TabBarController: UITabBarController {
         search.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         search.tabBarItem.title = "검색"
         
-        viewControllers = [locker, forYou, album, search]
+        viewControllers = [locker, album]
     }
     
     private func registerViewControllers() {

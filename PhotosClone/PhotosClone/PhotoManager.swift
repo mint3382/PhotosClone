@@ -25,10 +25,6 @@ class PhotoManager {
         }
     }
     
-    func categorizeForYouMemory(section: ForYouSection) {
-        let persons = PHCollectionList.fetchMomentLists(with: .smartFolderFaces, options: nil)
-    }
-    
     func categorizeAlbums(section: AlbumSection) -> [PHCollection] {
         var albums: [PHCollection] = []
         switch section {

@@ -19,10 +19,10 @@ class PhotoPageViewController: UIViewController {
         bar.translatesAutoresizingMaskIntoConstraints = false
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: nil)
-        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: nil)
+//        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: nil)
+//        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: nil)
         let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(tappedDeleteButton))
-        let barItems = [shareButton, flexibleSpace, heartButton, flexibleSpace, trashButton]
+        let barItems = [flexibleSpace, trashButton, flexibleSpace]
         
         bar.setItems(barItems, animated: true)
         
@@ -77,7 +77,7 @@ class PhotoPageViewController: UIViewController {
     
     @objc func tappedDeleteButton() {
         PHPhotoLibrary.shared().performChanges ({
-            PHAssetChangeRequest.deleteAssets([PhotoManager.shared.allPhotos[self.viewModel.selectedIndex?.item ?? 0]] as NSArray)
+            PHAssetChangeRequest.deleteAssets([self.viewModel.assets[self.viewModel.selectedIndex?.item ?? 0]] as NSArray)
         }, completionHandler: { success, error in
             if success {
                 print("===success===")
