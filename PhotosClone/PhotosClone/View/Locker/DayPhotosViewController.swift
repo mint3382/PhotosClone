@@ -294,7 +294,7 @@ class DayPhotosViewController: UIViewController {
         
         for (date, dayAssets) in photosByDate {
             let uniqueAssets = Set(dayAssets.map { $0.localIdentifier }).map { id in
-                dayAssets.first { $0.localIdentifier == id }!
+                dayAssets.first { $0.localIdentifier == id } ?? PHAsset()
             }
             snapshot.appendItems(uniqueAssets, toSection: date)
         }
@@ -321,26 +321,28 @@ extension DayPhotosViewController: PHPhotoLibraryChangeObserver {
             
             let changeAssets = changes.fetchResultAfterChanges.objects(at: IndexSet(integersIn: 0..<changes.fetchResultAfterChanges.count))
             
-            var snapshot = dataSource?.snapshot()
+            guard var snapshot = dataSource?.snapshot() else {
+                return
+            }
             
             // CollectionView 업데이트
             if changes.hasIncrementalChanges {
                 if let removed = changes.removedIndexes, !removed.isEmpty {
-                    snapshot?.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0]})
+                    snapshot.deleteItems(removed.map { PhotoManager.shared.allPhotos[$0]})
                 }
                 
                 if let inserted = changes.insertedIndexes, !inserted.isEmpty {
                     let assets = inserted.map { changeAssets[$0] }
                     let uniqueAssets = Set(assets.map { $0.localIdentifier }).map { id in
-                        assets.first { $0.localIdentifier == id }!
+                        assets.first { $0.localIdentifier == id } ?? PHAsset()
                     }
                     let dates = uniqueAssets.compactMap { $0.creationDate }.map { self.dateFormatter.string(from: $0) }
                     for (index, asset) in uniqueAssets.enumerated() {
-                        snapshot?.appendItems([asset], toSection: dates[index])
+                        snapshot.appendItems([asset], toSection: dates[index])
                     }
                 }
                 PhotoManager.shared.allPhotos = changeAssets
-                dataSource?.apply(snapshot!)
+                dataSource?.apply(snapshot)
                 categorizePhotosByDate()
             } else {
                 self.setSnapshot()

@@ -19,8 +19,6 @@ class PhotoPageViewController: UIViewController {
         bar.translatesAutoresizingMaskIntoConstraints = false
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-//        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: nil)
-//        let heartButton = UIBarButtonItem(image: UIImage(systemName: "heart"), style: .plain, target: self, action: nil)
         let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(tappedDeleteButton))
         let barItems = [flexibleSpace, trashButton, flexibleSpace]
         

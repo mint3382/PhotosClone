@@ -71,7 +71,7 @@ class AlbumViewController: UIViewController {
     private func createLayout() -> UICollectionViewCompositionalLayout {
         UICollectionViewCompositionalLayout(sectionProvider: { [weak self] sectionIndex, layoutEnvironment in
             guard let self, let sectionKind = AlbumSection(rawValue: sectionIndex) else {
-                return self!.createAlbumSection()
+                return NSCollectionLayoutSection(group: NSCollectionLayoutGroup(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))))
             }
             let section: NSCollectionLayoutSection
             
