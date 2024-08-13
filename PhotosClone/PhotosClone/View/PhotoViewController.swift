@@ -177,7 +177,6 @@ class PhotoViewController: UIViewController {
 
 extension PhotoViewController: UICollectionViewDelegate { 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        viewModel.input.tappedInsidePhoto.send(indexPath)
         viewModel.input.selectedItem.send()
     }
 }

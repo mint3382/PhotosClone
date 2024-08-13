@@ -102,11 +102,11 @@
 				924BC6612C688076009E5463 /* Model */,
 				924BC6422C64D635009E5463 /* View */,
 				924BC64E2C64E825009E5463 /* ViewModel */,
+				924BC6722C6B8918009E5463 /* Common */,
 				924BC6552C64FBDD009E5463 /* DesignSystem */,
 				924BC62D2C634002009E5463 /* Assets.xcassets */,
 				924BC62F2C634002009E5463 /* LaunchScreen.storyboard */,
 				924BC6322C634002009E5463 /* Info.plist */,
-				924BC65E2C667A8B009E5463 /* PhotoManager.swift */,
 			);
 			path = PhotosClone;
 			sourceTree = "<group>";
@@ -200,6 +200,14 @@
 				924BC63E2C64542B009E5463 /* SearchViewController.swift */,
 			);
 			path = Search;
+			sourceTree = "<group>";
+		};
+		924BC6722C6B8918009E5463 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				924BC65E2C667A8B009E5463 /* PhotoManager.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
